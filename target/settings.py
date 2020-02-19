@@ -37,11 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # Third parties 
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-
+    # Project apps
     'users',
     'api',
 ]
@@ -61,7 +61,7 @@ ROOT_URLCONF = 'target.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
