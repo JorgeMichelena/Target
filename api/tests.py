@@ -10,28 +10,34 @@ class EditProfileTests(TestCase):
     def setUp(self):
         self.request_factory = APIRequestFactory()
         self.user1 = UserFactory()
-        self.user2 = UserFactory()
-        self.user1.save()
-        self.user2.save()
         self.view = UserDetailsView.as_view()
     
-    def test_logged_user_changes_not_read_only_fields(self):
+    def test_logged_user_changes_editable_fields(self):
         # arrange
-        user1_pk = self.user1.pk
-        data = {'username':self.user1.username, 'first_name':'new_first_name', 'last_name':'new_last_name', 'gender':'F'}
+        old_first_name = self.user1.first_name
+        old_last_name = self.user1.last_name
+        old_gender = self.user1.gender        
+        data = {'username':self.user1.username, 
+                'first_name':'new_first_name', 
+                'last_name':'new_last_name', 
+                'gender':'F'}
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
         # act
         response = self.view(request)
         # assert
-        new_first_name = User.objects.get(pk=user1_pk).first_name
-        new_last_name = User.objects.get(pk=user1_pk).last_name
-        new_gender = User.objects.get(pk=user1_pk).gender
+        new_first_name = self.user1.first_name
+        new_last_name = self.user1.last_name
+        new_gender = self.user1.gender
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(new_first_name, 'new_first_name')
         self.assertEqual(new_last_name, 'new_last_name')
         self.assertEqual(new_gender, 'F')
+        self.assertFalse(new_first_name==old_first_name)
+        self.assertFalse(new_last_name==old_last_name)
+        self.assertFalse(new_gender==old_gender)
+        
     
     def test_logged_user_changes_pk(self):
         # arrange
@@ -42,7 +48,7 @@ class EditProfileTests(TestCase):
         # act
         response = self.view(request)
         # assert
-        new_pk = User.objects.get(pk=old_pk).pk
+        new_pk = self.user1.pk
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(new_pk, old_pk)
@@ -50,7 +56,6 @@ class EditProfileTests(TestCase):
         
     def test_logged_user_changes_email(self):
         # arrange
-        user1_pk = self.user1.pk
         old_email = self.user1.email
         data = {'username':self.user1.username, 'email':'newemail@example.com'}
         request = self.request_factory.put('/api/v1', data, format='json')
@@ -58,15 +63,14 @@ class EditProfileTests(TestCase):
         # act
         response = self.view(request)
         # assert
-        new_email = User.objects.get(pk=user1_pk).email
+        new_email = self.user1.email
         
         self.assertEqual(response.status_code, 200)
         self.assertEqual(new_email, old_email)
         self.assertFalse(new_email=='newemail@example.com')
     
-    def test_not_logged_user_changes_not_read_only_fields(self):
+    def test_not_logged_user_changes_editable_fields(self):
         # arrange
-        user1_pk = self.user1.pk
         old_first_name = self.user1.first_name
         old_last_name = self.user1.last_name
         data = {'username':self.user1.username, 'first_name':'new_first_name', 'last_name':'new_last_name'}
@@ -74,8 +78,8 @@ class EditProfileTests(TestCase):
         # act
         response = self.view(request)
         # assert
-        new_first_name = User.objects.get(pk=user1_pk).first_name
-        new_last_name = User.objects.get(pk=user1_pk).last_name
+        new_first_name = self.user1.first_name
+        new_last_name = self.user1.last_name
         
         self.assertEqual(response.status_code, 403)
         self.assertEqual(new_first_name, old_first_name)
@@ -83,15 +87,14 @@ class EditProfileTests(TestCase):
         
     def test_logged_user_changes_gender_to_non_valid_value(self):
         # arrange
-        user1_pk = self.user1.pk
-        old_gender = User.objects.get(pk=user1_pk).gender
+        old_gender = self.user1.gender
         data = {'username':self.user1.username, 'gender':'Male'}
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
         # act
         response = self.view(request)
         # assert
-        new_gender = User.objects.get(pk=user1_pk).gender
+        new_gender = self.user1.gender
         
         self.assertEqual(response.status_code, 400)
         self.assertEqual(new_gender, old_gender)
