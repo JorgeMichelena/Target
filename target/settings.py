@@ -31,20 +31,29 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Project apps
+    'users',
+    'api',
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # Third parties 
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    # Project apps
-    'users',
-    'api',
+    'rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
 ]
+
+SITE_ID = 2
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +66,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'target.urls'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 TEMPLATES = [
     {
@@ -73,6 +84,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'target.wsgi.application'
 
@@ -110,6 +123,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER' : 'api.serializers.UserDetailsSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'api.serializers.RegisterSerializer',
 }
 
 
