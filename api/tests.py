@@ -1,4 +1,5 @@
 from users.factory import UserFactory
+from factory.faker import faker
 from rest_framework.test import APITestCase
 from api import serializers
 from users.models import User
@@ -115,45 +116,52 @@ class EditProfileTests(APITestCase):
 class SignupTest(APITestCase):
     def setUp(self):
         self.view = RegisterView.as_view()
+        self.fake = faker.Faker()
         
     def test_signup_with_correct_values(self):
+        email = self.fake.email()
+        pass_1 = self.fake.password()
         data = {'username': 'TestUser',
-                'email': 'user@test.com',
-                'password1': 'testing123pass',
-                'password2': 'testing123pass',
+                'email': email,
+                'password1': pass_1,
+                'password2': pass_1,
                 'gender': 'M',
         }
         response = self.client.post('/api/v1/registration/', data)
         user = User.objects.get(username='TestUser')
-        self.assertEqual(user.email, 'user@test.com')
+        self.assertEqual(user.email, email)
         self.assertEqual(user.username, 'TestUser')
         self.assertEqual(user.gender, 'M')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
     def test_signup_with_incorrect_gender_value(self):
+        email = self.fake.email()
+        pass_1 = self.fake.password()
         data = {'username': 'TestUser',
-                'email': 'user@test.com',
-                'password1': 'testing123pass',
-                'password2': 'testing123pass',
+                'email': email,
+                'password1': pass_1,
+                'password2': pass_1,
                 'gender': 'H',
         }
         response = self.client.post('/api/v1/registration/', data)
-        
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.json()['non_field_errors'], ["Invalid input. Use 'F' for female, 'M' for male, or 'O' for other."])
-
+        self.assertEqual(response.json()['gender'], ["Invalid input. Use 'F' for female, 'M' for male, or 'O' for other."])
     
     def test_signup_with_username_already_in_use(self):
+        email_1 = self.fake.email()
+        email_2 = self.fake.email()
+        pass_1 = self.fake.password()
+        pass_2 = self.fake.password()        
         data_1 = {'username': 'TestUser',
-                  'email': 'user@test.com',
-                  'password1': 'testing123pass',
-                  'password2': 'testing123pass',
+                  'email': email_1,
+                  'password1': pass_1,
+                  'password2': pass_1,
                   'gender': 'M',
         }
         data_2 = {'username': 'TestUser',
-                  'email': 'user2@test.com',
-                  'password1': 'testing123pass',
-                  'password2': 'testing123pass',
+                  'email': email_2,
+                  'password1': pass_2,
+                  'password2': pass_2,
                   'gender': 'F',
         }
         self.client.post('/api/v1/registration/', data_1)
@@ -164,16 +172,19 @@ class SignupTest(APITestCase):
         
     
     def test_signup_with_email_already_in_use(self):
+        email = self.fake.email()
+        pass_1 = self.fake.password()
+        pass_2 = self.fake.password()
         data_1 = {'username': 'TestUser',
-                  'email': 'user@test.com',
-                  'password1': 'testing123pass',
-                  'password2': 'testing123pass',
+                  'email': email,
+                  'password1': pass_1,
+                  'password2': pass_1,
                   'gender': 'M',
         }
         data_2 = {'username': 'TestUser2',
-                  'email': 'user@test.com',
-                  'password1': 'testing123pass',
-                  'password2': 'testing123pass',
+                  'email': email,
+                  'password1': pass_2,
+                  'password2': pass_2,
                   'gender': 'F',
         }
         self.client.post('/api/v1/registration/', data_1)

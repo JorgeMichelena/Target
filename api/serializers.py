@@ -24,10 +24,8 @@ class RegisterSerializer(RegisterSerializer):
         user.gender = self.validated_data.get('gender', '')
         user.save(update_fields=['gender'])
     
-    def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError(_("The two password fields didn't match."))
-        if data['gender'] not in ['F', 'M', 'N', 'O', '']:
+    def validate_gender(self, data):
+        if data not in ['F', 'M', 'N', 'O', '']:
             raise serializers.ValidationError(("Invalid input. Use 'F' for female, 'M' for male, or 'O' for other."))
         return data
 
