@@ -15,18 +15,21 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = ('email', 'pk')
         
 class RegisterSerializer(RegisterSerializer):
-    gender = serializers.CharField(
-        max_length=1,
-        default='N',
+    MALE = ('M', 'Male')
+    FEMALE = ('F', 'Female')
+    OTHER = ('O', 'Other')
+    NOT_SPECIFIED = ('N', 'Not Specified')
+    GENDERS = (
+        MALE,
+        FEMALE,
+        OTHER,
+        NOT_SPECIFIED,
     )
+    gender = serializers.ChoiceField(choices=GENDERS,)
     
     def custom_signup(self, request, user):
         user.gender = self.validated_data.get('gender', '')
         user.save(update_fields=['gender'])
     
-    def validate_gender(self, data):
-        if data not in ['F', 'M', 'N', 'O', '']:
-            raise serializers.ValidationError(("Invalid input. Use 'F' for female, 'M' for male, or 'O' for other."))
-        return data
 
 
