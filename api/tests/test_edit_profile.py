@@ -21,7 +21,7 @@ class EditProfileTests(APITestCase):
         data = {'username':self.user1.username, 
                 'first_name':'new_first_name', 
                 'last_name':'new_last_name', 
-                'gender':'F',
+                'gender':User.FEMALE[0],
         }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
@@ -35,16 +35,15 @@ class EditProfileTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_first_name, 'new_first_name')
         self.assertEqual(new_last_name, 'new_last_name')
-        self.assertEqual(new_gender, 'F')
+        self.assertEqual(new_gender, User.FEMALE[0])
         self.assertFalse(new_first_name==old_first_name)
         self.assertFalse(new_last_name==old_last_name)
         self.assertFalse(new_gender==old_gender)
-        
-    
+
     def test_logged_user_changes_pk(self):
         # arrange
         old_pk = self.user1.pk
-        data = {'pk':'1000', 
+        data = {'pk':'1000',
                 'username':self.user1.username,
         }
         request = self.request_factory.put('/api/v1', data, format='json')
@@ -53,7 +52,6 @@ class EditProfileTests(APITestCase):
         response = self.view(request)
         # assert
         new_pk = self.user1.pk
-        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_pk, old_pk)
         self.assertFalse(new_pk=='1000')

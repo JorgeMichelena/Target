@@ -15,17 +15,7 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         read_only_fields = ('email', 'pk')
         
 class RegisterSerializer(RegisterSerializer):
-    MALE = ('M', 'Male')
-    FEMALE = ('F', 'Female')
-    OTHER = ('O', 'Other')
-    NOT_SPECIFIED = ('N', 'Not Specified')
-    GENDERS = (
-        MALE,
-        FEMALE,
-        OTHER,
-        NOT_SPECIFIED,
-    )
-    gender = serializers.ChoiceField(choices=GENDERS,)
+    gender = serializers.ChoiceField(choices=User.GENDERS,)
     
     def custom_signup(self, request, user):
         user.gender = self.validated_data.get('gender', '')
