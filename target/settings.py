@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 PROJECT_APPS = [
     'users',
     'api',
+    'targets',
 ]
 
 DJANGO_APPS = [
