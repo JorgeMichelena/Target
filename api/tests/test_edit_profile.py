@@ -1,11 +1,12 @@
 from users.factory import UserFactory
-from django.test import TestCase
+from rest_framework.test import APITestCase
 from api import serializers
 from users.models import User
+from rest_framework import status
 from rest_framework.test import APIClient, force_authenticate, APIRequestFactory
 from rest_auth.views import UserDetailsView
 
-class EditProfileTests(TestCase):
+class EditProfileTests(APITestCase):
         
     def setUp(self):
         self.request_factory = APIRequestFactory()
@@ -20,7 +21,8 @@ class EditProfileTests(TestCase):
         data = {'username':self.user1.username, 
                 'first_name':'new_first_name', 
                 'last_name':'new_last_name', 
-                'gender':'F'}
+                'gender':User.FEMALE[0],
+        }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
         # act
@@ -30,34 +32,36 @@ class EditProfileTests(TestCase):
         new_last_name = self.user1.last_name
         new_gender = self.user1.gender
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_first_name, 'new_first_name')
         self.assertEqual(new_last_name, 'new_last_name')
-        self.assertEqual(new_gender, 'F')
+        self.assertEqual(new_gender, User.FEMALE[0])
         self.assertFalse(new_first_name==old_first_name)
         self.assertFalse(new_last_name==old_last_name)
         self.assertFalse(new_gender==old_gender)
-        
-    
+
     def test_logged_user_changes_pk(self):
         # arrange
         old_pk = self.user1.pk
-        data = {'pk':'1000', 'username':self.user1.username}
+        data = {'pk':'1000',
+                'username':self.user1.username,
+        }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
         # act
         response = self.view(request)
         # assert
         new_pk = self.user1.pk
-        
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_pk, old_pk)
         self.assertFalse(new_pk=='1000')
         
     def test_logged_user_changes_email(self):
         # arrange
         old_email = self.user1.email
-        data = {'username':self.user1.username, 'email':'newemail@example.com'}
+        data = {'username':self.user1.username, 
+                'email':'newemail@example.com',
+        }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
         # act
@@ -65,7 +69,7 @@ class EditProfileTests(TestCase):
         # assert
         new_email = self.user1.email
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_email, old_email)
         self.assertFalse(new_email=='newemail@example.com')
     
@@ -73,7 +77,10 @@ class EditProfileTests(TestCase):
         # arrange
         old_first_name = self.user1.first_name
         old_last_name = self.user1.last_name
-        data = {'username':self.user1.username, 'first_name':'new_first_name', 'last_name':'new_last_name'}
+        data = {'username':self.user1.username, 
+                'first_name':'new_first_name', 
+                'last_name':'new_last_name',
+        }
         request = self.request_factory.put('/api/v1', data, format='json')
         # act
         response = self.view(request)
@@ -81,7 +88,7 @@ class EditProfileTests(TestCase):
         new_first_name = self.user1.first_name
         new_last_name = self.user1.last_name
         
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(new_first_name, old_first_name)
         self.assertEqual(new_last_name, old_last_name)
         
@@ -96,8 +103,6 @@ class EditProfileTests(TestCase):
         # assert
         new_gender = self.user1.gender
         
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(new_gender, old_gender)
         self.assertFalse(new_gender=='Male')
-  
-        

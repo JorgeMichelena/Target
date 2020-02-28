@@ -1,6 +1,7 @@
-
+from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from users.models import User
+
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,4 +13,13 @@ class UserDetailsSerializer(serializers.ModelSerializer):
                 'last_name', 
                 'gender')
         read_only_fields = ('email', 'pk')
+        
+class RegisterSerializer(RegisterSerializer):
+    gender = serializers.ChoiceField(choices=User.GENDERS,)
+    
+    def custom_signup(self, request, user):
+        user.gender = self.validated_data.get('gender', '')
+        user.save(update_fields=['gender'])
+    
+
 
