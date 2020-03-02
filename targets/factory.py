@@ -5,7 +5,7 @@ from targets.models import Topic
 
 class TopicFactory(factory.Factory):
     
-    name = faker.Faker().word()
+    name = factory.Sequence(lambda n: 'Topic%s' %n)
     
     class Meta:
         model = Topic    

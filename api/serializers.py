@@ -24,6 +24,6 @@ class RegisterSerializer(RegisterSerializer):
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = ['name']
+        fields = ['name', 'picture']
 
 
