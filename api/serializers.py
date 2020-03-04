@@ -1,7 +1,7 @@
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from users.models import User
-from targets.models import Topic
+from targets.models import Topic, Target
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,5 +25,10 @@ class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = ['name', 'picture']
+
+class TargetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Target
+        fields = ['title', 'location', 'radius', 'topic']
 
 

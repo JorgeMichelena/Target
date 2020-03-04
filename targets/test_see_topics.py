@@ -5,6 +5,8 @@ from targets.models import Topic
 from rest_framework import status
 from rest_framework.test import force_authenticate
 import json
+import random
+from factory.faker import faker
 
 class SeeTopicsTest(APITestCase):
     def setUp(self):
