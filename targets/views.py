@@ -1,5 +1,5 @@
 from targets.models import Topic
-from api.serializers import TopicSerializer
+from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import generics, permissions
 
 class TopicsList(generics.ListAPIView):
@@ -7,4 +7,11 @@ class TopicsList(generics.ListAPIView):
     serializer_class = TopicSerializer
 
     permission_classes = (permissions.IsAuthenticated,)
+
+class CreateTarget(generics.CreateAPIView):
+    serializer_class = TargetSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 

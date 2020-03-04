@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.test import force_authenticate
 from targets.views import TopicsList
 import json
+import random
+from factory.faker import faker
 
 class SeeTopicsTest(APITestCase):
     def setUp(self):
@@ -23,6 +25,3 @@ class SeeTopicsTest(APITestCase):
     def test_see_topics_when_not_logged_in(self):
         response = self.client.get('/api/v1/topics/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-
-

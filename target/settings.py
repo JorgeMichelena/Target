@@ -44,6 +44,7 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.gis',
 ]
 
 THIRD_PARTY_APPS = [
@@ -54,6 +55,7 @@ THIRD_PARTY_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'rest_framework_gis',
 ]
 
 INSTALLED_APPS = PROJECT_APPS + DJANGO_APPS + THIRD_PARTY_APPS 
@@ -101,9 +103,16 @@ AUTH_USER_MODEL = 'users.User'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE' : 'django.contrib.gis.db.backends.postgis',
+        'NAME' : 'target',
+        'USER' : 'jorgemichelena',
+        'PASSWORD' : '',
+        'HOST' : '',
+        'PORT' : '',
+        'TEST' : {
+            'NAME' : 'testing_database',
+        },
+    },
 }
 
 
@@ -163,6 +172,5 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 
 # File management settings
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'api/v1/media/'
