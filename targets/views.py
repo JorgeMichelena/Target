@@ -14,4 +14,11 @@ class CreateTarget(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class SeeMyTargets(generics.ListAPIView):
+    serializer_class = TargetSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    def get_queryset(self):
+        user = self.request.user
+        return user.targets.all()
+
 
