@@ -21,7 +21,7 @@ class EditProfileTests(APITestCase):
         data = {'username':self.user1.username, 
                 'first_name':'new_first_name', 
                 'last_name':'new_last_name', 
-                'gender':User.FEMALE[0],
+                'gender':User.FEMALE,
         }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
@@ -35,7 +35,7 @@ class EditProfileTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_first_name, 'new_first_name')
         self.assertEqual(new_last_name, 'new_last_name')
-        self.assertEqual(new_gender, User.FEMALE[0])
+        self.assertEqual(new_gender, User.FEMALE)
         self.assertFalse(new_first_name==old_first_name)
         self.assertFalse(new_last_name==old_last_name)
         self.assertFalse(new_gender==old_gender)

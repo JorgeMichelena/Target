@@ -2,16 +2,16 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    MALE = ('M', 'Male')
-    FEMALE = ('F', 'Female')
-    OTHER = ('O', 'Other')
-    NOT_SPECIFIED = ('N', 'Not Specified')
-    GENDERS = (
-        MALE,
-        FEMALE,
-        OTHER,
-        NOT_SPECIFIED,
-    )
+    MALE = 'M'
+    FEMALE = 'F'
+    OTHER = 'O'
+    NOT_SPECIFIED = 'N'
+    GENDERS = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+        (OTHER, 'Other'),
+        (NOT_SPECIFIED, 'Not Specified'),
+    ]
     
     gender = models.CharField(
         choices=GENDERS,
