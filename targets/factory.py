@@ -15,8 +15,9 @@ class TopicFactory(factory.Factory):
 class TargetFactory(factory.Factory):
     title = faker.Faker().word()
     radius = random.randint(0, 1000)
-    location = Point(random.randint(-90, 90) + random.random(),
-                    random.randint(-180, 180) + random.random()
-                )
+    lat = random.randint(-90, 90) + random.random()
+    lon = random.randint(-180, 180) + random.random()
+    location = Point(lat, lon)
     class Meta:
         model = Target
+        exclude = ('lat', 'lon',)
