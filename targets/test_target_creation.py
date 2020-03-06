@@ -5,7 +5,6 @@ from rest_framework.test import APITestCase
 from targets.models import Topic
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from targets.views import TopicsList
 import json
 import random
 
@@ -18,44 +17,49 @@ class CreateTargetTest(APITestCase):
         self.user.save()
         self.title = faker.Faker().word()
         self.radius = random.randint(0, 1000) 
-        latitude = random.randint(-90,90) + random.random()
-        longitude = random.randint(-180,180) + random.random()
-        self.location = str({"type": "Point",
-                        "coordinates": [latitude, longitude]
-                        })
+        self.latitude = random.randint(-90,90) + random.random()
+        self.longitude = random.randint(-180,180) + random.random()
+        self.location = {"type": "Point",
+                        "coordinates": [self.latitude, self.longitude]
+                        }
+        self.location_str = str(self.location)
     
     def test_create_target_when_logged_in(self):
         self.client.force_authenticate(user=self.user)
         data = {
             "title": self.title,
-            "location": self.location,
+            "location": self.location_str,
             "radius": self.radius,
-            "topic": self.topic.name,
+            "topic": self.topic.name
         }
-        response = self.client.post('/api/v1/create-target/', data)
+        expected = data.copy()
+        expected['location'] = self.location
+
+        response = self.client.post('/api/v1/targets/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertDictEqual(response.json(), expected)
 
     def test_create_target_when_not_logged_in(self):
         data = {
             "title": self.title,
-            "location": self.location,
+            "location": self.location_str,
             "radius": self.radius,
             "topic": self.topic.name,
         }
-        response = self.client.post('/api/v1/create-target/', data)
+        response = self.client.post('/api/v1/targets/', data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_target_when_logged_in_with_incorrect_values(self):
         self.client.force_authenticate(user=self.user)
         data_empty_title = {
             "title": '',
-            "location": self.location,
+            "location": self.location_str,
             "radius": self.radius,
             "topic": self.topic.name,
         }
         data_negative_radius = {
             "title": self.title,
-            "location": self.location,
+            "location": self.location_str,
             "radius": -1*self.radius,
             "topic": self.topic.name,
         }
@@ -70,16 +74,15 @@ class CreateTargetTest(APITestCase):
         }
         data_nonexisting_topic = {
             "title": self.title,
-            "location": self.location,
+            "location": self.location_str,
             "radius": self.radius,
             "topic": "wrong topic",
         }
-        response_empty_title = self.client.post('/api/v1/create-target/', data_empty_title)
-        response_negative_radius = self.client.post('/api/v1/create-target/', data_negative_radius)
-        response_wrong_location = self.client.post('/api/v1/create-target/', data_wrong_location)
-        response_nonexisting_topic = self.client.post('/api/v1/create-target/', data_nonexisting_topic)
+        response_empty_title = self.client.post('/api/v1/targets/', data_empty_title)
+        response_negative_radius = self.client.post('/api/v1/targets/', data_negative_radius)
+        response_wrong_location = self.client.post('/api/v1/targets/', data_wrong_location)
+        response_nonexisting_topic = self.client.post('/api/v1/targets/', data_nonexisting_topic)
         self.assertEqual(response_empty_title.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_negative_radius.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_wrong_location.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_nonexisting_topic.status_code, status.HTTP_400_BAD_REQUEST)
-
