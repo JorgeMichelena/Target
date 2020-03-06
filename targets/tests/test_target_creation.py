@@ -14,7 +14,7 @@ class CreateTargetTest(APITestCase):
         self.title = faker.Faker().word()
         self.radius = randint(0, 1000)
         self.latitude = uniform(-180, 180)
-        self.longitude = uniform(-90, 90)        
+        self.longitude = uniform(-90, 90)
         self.location = {"type": "Point",
                          "coordinates": [self.latitude, self.longitude]
                          }
