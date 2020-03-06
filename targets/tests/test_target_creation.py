@@ -33,8 +33,6 @@ class CreateTargetTest(APITestCase):
         response = self.client.post(self.targets_url, data)
         response_content = response.json()
         response_content.pop('pk')
-        expected = data.copy()
-        expected['location'] = self.location
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertDictEqual(response_content, expected)
 
