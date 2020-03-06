@@ -1,7 +1,7 @@
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from users.models import User
-
+from targets.models import Topic
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,5 +21,9 @@ class RegisterSerializer(RegisterSerializer):
         user.gender = self.validated_data.get('gender', '')
         user.save(update_fields=['gender'])
     
+class TopicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ['name', 'picture']
 
 

@@ -21,7 +21,7 @@ class EditProfileTests(APITestCase):
         data = {'username':self.user1.username, 
                 'first_name':'new_first_name', 
                 'last_name':'new_last_name', 
-                'gender':User.FEMALE,
+                'gender': User.FEMALE,
         }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
