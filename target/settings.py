@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '!f7k)2j8c!@o!ljx7deoaylhvv)1b$n(np-9l-x7_!4h#*ux*8'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -103,12 +103,12 @@ AUTH_USER_MODEL = 'users.User'
 
 DATABASES = {
     'default': {
-        'ENGINE' : 'django.contrib.gis.db.backends.postgis',
-        'NAME' : 'target',
-        'USER' : 'jorgemichelena',
-        'PASSWORD' : '',
-        'HOST' : '',
-        'PORT' : '',
+        'ENGINE' : os.getenv('DB_ENGINE'),
+        'NAME' : os.getenv('DB_NAME'),
+        'USER' : os.getenv('USER'),
+        'PASSWORD' : os.getenv('PASSWORD', ''),
+        'HOST' : os.getenv('HOST', 'localhost'),
+        'PORT' : os.getenv('PORT'),
         'TEST' : {
             'NAME' : 'testing_database',
         },
@@ -164,13 +164,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Allauth settings
+
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = 'login/'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'user/'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
-
-
-# File management settings
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = 'api/v1/media/'
