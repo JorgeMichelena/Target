@@ -5,9 +5,7 @@ from rest_framework.test import APITestCase
 from targets.models import Topic
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from targets.views import TopicsList
 import json
-import random
 
 class SeeMyTargetsTest(APITestCase):
     def setUp(self):
@@ -26,7 +24,7 @@ class SeeMyTargetsTest(APITestCase):
 
     def test_see_my_targets_when_logged_in(self):
         self.client.force_authenticate(self.user)
-        response = self.client.get('/api/v1/my-targets/')
+        response = self.client.get('/api/v1/targets/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 3)
         self.assertEqual(response.json()[0]['title'], self.target_1.title)
@@ -34,11 +32,11 @@ class SeeMyTargetsTest(APITestCase):
         self.assertEqual(response.json()[2]['title'], self.target_3.title)
 
     def test_see_my_targets_when_not_logged_in(self):
-        response = self.client.get('/api/v1/my-targets/')
+        response = self.client.get('/api/v1/targets/')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_different_user_cant_see_my_targets(self):
         self.client.force_authenticate(self.user2)
-        response = self.client.get('/api/v1/my-targets/')
+        response = self.client.get('/api/v1/targets/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 0)
