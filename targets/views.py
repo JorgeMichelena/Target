@@ -1,24 +1,17 @@
-from targets.models import Topic
+from targets.models import Topic, Target
 from api.serializers import TopicSerializer, TargetSerializer
-from rest_framework import generics, permissions
+from rest_framework import viewsets, permissions
 
-class TopicsList(generics.ListAPIView):
+class TopicViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 
     permission_classes = (permissions.IsAuthenticated,)
 
-class CreateTarget(generics.CreateAPIView):
-    serializer_class = TargetSerializer
+class TargetViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TargetSerializer
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-class SeeMyTargets(generics.ListAPIView):
-    serializer_class = TargetSerializer
-    permission_classes = (permissions.IsAuthenticated,)
     def get_queryset(self):
-        user = self.request.user
-        return user.targets.all()
-
-
+        return self.request.user.targets

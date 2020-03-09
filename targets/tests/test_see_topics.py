@@ -4,7 +4,6 @@ from rest_framework.test import APITestCase
 from targets.models import Topic
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from targets.views import TopicsList
 import json
 import random
 from factory.faker import faker
@@ -14,7 +13,6 @@ class SeeTopicsTest(APITestCase):
         topics = TopicFactory.create_batch(5)
         for topic in topics: topic.save()
         self.user = UserFactory()
-        self.view = TopicsList.as_view()
     
     def test_see_topics_when_logged_in(self):
         self.client.force_authenticate(user=self.user)
