@@ -5,7 +5,7 @@ from targets.validators import validate_coordinates
 
 class Topic(models.Model):
     name = models.CharField(max_length=30, primary_key=True)
-    picture = models.ImageField(upload_to='media/topic_pictures/', null=True)
+    picture = models.TextField(default='')
     def __str__(self):
         return self.name
 
