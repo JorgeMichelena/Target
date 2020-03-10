@@ -12,15 +12,9 @@ class CreateTargetTest(APITestCase):
         self.topic = TopicFactory()
         self.user = UserFactory()
         self.title = faker.Faker().word()
-        self.radius = randint(0, 1000)
         self.latitude = uniform(-180, 180)
         self.longitude = uniform(-90, 90)
         self.location = {"type": "Point",
-                         "coordinates": [self.latitude, self.longitude]
-                         }
-        self.location_str = str(self.location)
-        self.targets_url = reverse('target-list')
-
     def test_create_target_when_logged_in(self):
         self.client.force_authenticate(user=self.user)
         data = {"title": self.title,
