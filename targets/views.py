@@ -5,7 +5,6 @@ from rest_framework import viewsets, permissions
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
-
     permission_classes = (permissions.IsAuthenticated,)
 
 class TargetViewSet(viewsets.ModelViewSet):

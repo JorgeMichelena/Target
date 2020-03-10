@@ -13,3 +13,4 @@ def validate_coordinates(value):
         raise ValidationError(
             _('Longitude must be a real number between -180 and 180'), 
         )
+

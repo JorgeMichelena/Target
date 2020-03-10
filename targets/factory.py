@@ -10,8 +10,8 @@ def truncate(number, digits):
     return math.trunc(stepper * number) / stepper
 
 class TopicFactory(factory.Factory):
-    
-    name = factory.Sequence(lambda n: 'Topic%s' %n)
+
+    name = factory.Sequence(lambda n: f'Topic{n}')
     
     class Meta:
         model = Topic    
