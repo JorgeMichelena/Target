@@ -23,24 +23,6 @@ class SeeMyTargetsTest(APITestCase):
         self.target_1.save()
         self.target_2.save()
 
-        print(
-            '\n VALORES ORIGINALES DE LOS PUNTOS\n'
-            f'TARGET 1: LATITUD = {self.target_1.location.x}\n'
-            f'\tLONGITUD = {self.target_1.location.y}\n'
-            f'TARGET 2: LATITUD = {self.target_2.location.x}\n'
-            f'\tLONGITUD = {self.target_2.location.y}\n'
-        )
- 
-        trg = Target.objects.all()   
-        print(
-            '\n VALORES EN DATABASE DE LOS PUNTOS\n'
-            f'TARGET 1 ({trg[0].pk}): LATITUD = {trg[0].location.x}\n'
-            f'\tLONGITUD = {trg[0].location.y}\n'
-            f'TARGET 2 ({trg[1]}): LATITUD = {trg[1].location.x}\n'
-            f'\tLONGITUD = {trg[1].location.y}\n'
-        )
-
-
     def test_see_my_targets_when_logged_in(self):
         self.client.force_authenticate(self.user)
         response = self.client.get('/api/v1/targets/')
@@ -59,14 +41,7 @@ class SeeMyTargetsTest(APITestCase):
         expected_list = [expected_target_1, expected_target_2]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
-        print('\n')
-        print(response.json())
-        print(expected_list)
-
-
-
-
-
+        self.assertCountEqual(response.json(), expected_list)
 
     def test_see_my_targets_when_not_logged_in(self):
         response = self.client.get('/api/v1/targets/')
