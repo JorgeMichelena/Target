@@ -170,11 +170,3 @@ ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = 'login/'
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = 'user/'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
-<<<<<<< HEAD
-
-
-# File management settings
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = 'api/v1/media/'
-=======
->>>>>>> bf9cda6... Modify settings.py to extract datsbase and secret key information from environment variables

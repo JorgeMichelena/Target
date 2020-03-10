@@ -15,3 +15,6 @@ class Target(gis_models.Model):
     title = models.CharField(max_length=20)
     radius = models.PositiveIntegerField()
     location = gis_models.PointField(geography=True, validators=[validate_coordinates])
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
