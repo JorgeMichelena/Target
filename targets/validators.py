@@ -5,12 +5,12 @@ from django.utils.translation import gettext_lazy as _
 def validate_coordinates(value):
     latitude = value.x
     longitude = value.y
-    if latitude>90 or latitude<-90:
+    if latitude>180 or latitude<-180:
         raise ValidationError(
-            _('Latitude must be a real number between -90 and 90'), 
+            _('Latitude must be a real number between -180 and 180'), 
         )
-    if longitude>180 or longitude<-180:
+    if longitude>90 or longitude<-90:
         raise ValidationError(
-            _('Longitude must be a real number between -180 and 180'), 
+            _('Longitude must be a real number between -90 and 90'), 
         )
         
