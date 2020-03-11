@@ -31,4 +31,4 @@ class TargetSerializer(serializers.ModelSerializer):
         model = Target
         fields = ['title', 'location', 'radius', 'topic']
 
-
+        

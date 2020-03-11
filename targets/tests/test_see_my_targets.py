@@ -5,8 +5,6 @@ from rest_framework.test import APITestCase
 from targets.models import Topic, Target
 from rest_framework import status
 from rest_framework.test import force_authenticate
-from api.serializers import TargetSerializer
-from rest_framework.renderers import JSONRenderer
 import json
 
 class SeeMyTargetsTest(APITestCase):
