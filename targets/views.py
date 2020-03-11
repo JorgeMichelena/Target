@@ -1,6 +1,7 @@
 from targets.models import Topic
 from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import viewsets, permissions
+from targets.validators import less_than_10_targets
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
@@ -16,6 +17,7 @@ class TargetViewSet(viewsets.ModelViewSet):
     serializer_class = TargetSerializer
 
     def perform_create(self, serializer):
+        less_than_10_targets(self.request.user)
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
