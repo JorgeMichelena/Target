@@ -2,6 +2,7 @@ from targets.models import Topic
 from chat.models import Match
 from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import viewsets, permissions
+from targets.validators import less_than_10_targets
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
