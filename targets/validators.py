@@ -28,4 +28,3 @@ def less_than_10_targets(user):
         raise DRF_ValidationError(
             _('You must have less than 10 targets to be able to create a new one')
        )
-    
