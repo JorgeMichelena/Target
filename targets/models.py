@@ -4,7 +4,7 @@ from targets.validators import validate_coordinates
 
 
 class Topic(models.Model):
-    name = models.CharField(max_length=30, primary_key=True)
+    name = models.CharField(max_length=30, unique=True)
     picture = models.TextField(default='')
     def __str__(self):
         return self.name
@@ -12,7 +12,7 @@ class Topic(models.Model):
 class Target(gis_models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='targets')
     topic = models.ForeignKey('Topic', on_delete=models.CASCADE)
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=20, unique=True)
     radius = models.PositiveIntegerField()
     location = gis_models.PointField(geography=True, validators=[validate_coordinates])
 

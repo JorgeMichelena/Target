@@ -24,11 +24,11 @@ class RegisterSerializer(RegisterSerializer):
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = ['name', 'picture']
+        fields = ['pk', 'name', 'picture']
 
 class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
-        fields = ['title', 'location', 'radius', 'topic']
+        fields = ['pk', 'title', 'location', 'radius', 'topic']
 
 
