@@ -1,7 +1,6 @@
 from targets.models import Topic, Target
 from users.factory import UserFactory
 from django.contrib.gis.geos import Point
-<<<<<<< HEAD
 from factory.django import DjangoModelFactory as Factory
 from faker.providers import BaseProvider
 import random
@@ -9,13 +8,6 @@ import factory
 
 
 class DjangoGeoPointProvider(BaseProvider):
-=======
-import math
-
-def truncate(number, digits):
-    stepper = 10.0 ** digits
-    return math.trunc(stepper * number) / stepper
->>>>>>> Add missinf newlines
 
     def geo_point(self, **kwargs):
         kwargs['coords_only'] = True
