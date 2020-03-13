@@ -24,7 +24,7 @@ def less_than_max_targets(user):
         )
 
 def less_than_10_targets(user):
-    if len(user.targets.all())>=10:
+    if user.targets.count>=10:
         raise DRF_ValidationError(
             _('You must have less than 10 targets to be able to create a new one')
        )
