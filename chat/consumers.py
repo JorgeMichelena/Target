@@ -3,7 +3,6 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from chat.models import Message, Match
 
-
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
