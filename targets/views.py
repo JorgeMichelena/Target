@@ -3,6 +3,7 @@ from chat.models import Match
 from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import viewsets, permissions
 from targets.validators import less_than_10_targets
+from django.contrib.gis.db.models.functions import Distance
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
