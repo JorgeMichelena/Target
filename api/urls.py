@@ -2,11 +2,13 @@ from django.urls import path, include
 from allauth.account import views
 from rest_auth.views import LoginView
 from targets.views import TopicViewSet, TargetViewSet
+from chat.views import MatchViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register('topics', TopicViewSet, basename='topic')
 router.register('targets', TargetViewSet, basename='target')
+router.register('matches', MatchViewSet, basename='match')
 
 urlpatterns = [
     path('', include(router.urls)),

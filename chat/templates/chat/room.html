@@ -1,0 +1,51 @@
+<htmnl>
+    <head>
+        <title>Chat room</title>
+    </head>
+    <body>
+        <textarea id="chat-log" cols="100" rows="20"> {{ chat }} </textarea><br>
+        <input id="chat-message-input" type="text" size="100"><br>
+        <input id="chat-message-submit" type="button" value="Send">
+        {{ match_id|json_script:"match_id" }}
+ 
+        <script>
+            const match_id = JSON.parse(document.getElementById('match_id').textContent);
+            const chatSocket = new WebSocket(
+                'ws://'
+                + window.location.host
+                + '/ws/chat/'
+                + match_id
+                + '/'
+            );
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                document.querySelector('#chat-log').value += ('>>' + data.author + ':\n' + data.message + '\n\n');
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+
+            document.querySelector('#chat-message-input').focus();
+            var input = document.getElementById("chat-message-input");
+            input.addEventListener("keyup", function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    document.getElementById("chat-message-submit").click();
+                }
+            });
+
+            document.querySelector('#chat-message-submit').onclick = function(e) {
+                const messageInputDom = document.querySelector('#chat-message-input');
+                const message = messageInputDom.value;
+                if (message != '') {
+                    chatSocket.send(JSON.stringify({
+                        'message': message
+                    }));
+                };
+                messageInputDom.value = '';
+            };
+        </script>
+    </body>
+</htmnl>

@@ -35,6 +35,7 @@ PROJECT_APPS = [
     'users',
     'api',
     'targets',
+    'chat',
 ]
 
 DJANGO_APPS = [
@@ -57,6 +58,7 @@ THIRD_PARTY_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'rest_framework_gis',
+    'channels',
 ]
 
 INSTALLED_APPS = PROJECT_APPS + DJANGO_APPS + THIRD_PARTY_APPS
@@ -188,4 +190,16 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'target.tasks.delete_one_week_old_targets',
         'schedule': crontab(hour='*/12'),
     }
+}
+
+#Channels
+
+ASGI_APPLICATION = "target.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
 }
