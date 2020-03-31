@@ -4,6 +4,7 @@ from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import viewsets, permissions
 from targets.validators import less_than_10_targets
 from django.contrib.gis.db.models.functions import Distance
+from chat import push_notifications
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
