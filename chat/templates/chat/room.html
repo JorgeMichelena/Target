@@ -1,6 +1,43 @@
 <html>
     <head>
         <title>Chat room</title>
+
+        <link rel="manifest" href="/manifest.json" />
+        <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            var OneSignal = window.OneSignal || [];
+            OneSignal.push(function() {
+            OneSignal.init({
+                appId: "50846782-217f-457d-9b27-827330bd831c",
+                safari_web_id: 'web.onesignal.auto.63749170-9b18-4e2b-ba12-fbd09a76',
+                //subdomainName:"YOUR_LABEL",/* The label for your site that you added in Site Setup mylabel.os.tc */
+                notifyButton: {
+                enable: true,
+                },
+            });
+            });
+
+            OneSignal.push(function() {
+                OneSignal.on('subscriptionChange', function (isSubscribed) {
+                    console.log("The user's subscription state is now:",isSubscribed);
+                    OneSignal.push(function() {
+                        OneSignal.getUserId(function(userId) {
+                            console.log("OneSignal User ID:", userId);
+                            $.ajax({
+                                url:'/onesignal-register/',
+                                type: "POST",
+                                data: {playerId: userId},
+                                success:function(response){},
+                                complete:function(){},
+                                error:function (xhr, textStatus, thrownError){}
+                            });
+                        });
+                    });
+                });
+            });
+
+        </script>
     </head>
     <body>
         <textarea id="chat-log" cols="100" rows="20"> {{ chat }} </textarea><br>

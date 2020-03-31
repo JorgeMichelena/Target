@@ -59,6 +59,7 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount',
     'rest_framework_gis',
     'channels',
+    'django_extensions',
 ]
 
 INSTALLED_APPS = PROJECT_APPS + DJANGO_APPS + THIRD_PARTY_APPS

@@ -5,6 +5,10 @@ from django.db.models import Q
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.http import HttpResponse
+from users.models import User
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -38,3 +42,13 @@ class ChatRoom(TemplateView):
         if not (match.target1.user == user or match.target2.user == user):
             raise Http404
         return super(ChatRoom, self).dispatch(request, *args, **kwargs)
+
+@csrf_exempt
+@login_required
+def onesignal_register(request):
+    user = User.objects.get(pk=request.user.id)
+    player_id = request.POST.get('playerId')
+    if player_id:
+        user.onesignal_playerId = player_id
+        user.save()
+        return HttpResponse('Done')

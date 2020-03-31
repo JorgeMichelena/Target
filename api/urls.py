@@ -5,6 +5,7 @@ from targets.views import TopicViewSet, TargetViewSet
 from chat.views import MatchViewSet
 from rest_framework.routers import DefaultRouter
 
+
 router = DefaultRouter()
 router.register('topics', TopicViewSet, basename='topic')
 router.register('targets', TargetViewSet, basename='target')

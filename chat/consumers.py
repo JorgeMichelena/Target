@@ -2,8 +2,11 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from chat.models import Message, Match
+from chat import push_notifications
+
 
 class ChatConsumer(WebsocketConsumer):
+    connected = set(( ))
     def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.user = self.scope['user']
@@ -14,7 +17,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-
+        self.connected.add(self.user.id)
         self.accept()
 
     def disconnect(self, close_code):
@@ -22,6 +25,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        self.connected.discard(self.user.id)
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -39,6 +43,14 @@ class ChatConsumer(WebsocketConsumer):
                 'author': self.user.username,
             }
         )
+        pid = ''
+        if len(self.connected) == 1:
+            if self.match.target1.user.id == self.user.id:
+                pid = self.match.target2.user.onesignal_playerId
+            else:
+                pid = self.match.target1.user.onesignal_playerId
+            push_notifications.send_notification('message', self.match_id, message, pid)
+
 
     def chat_message(self, event):
         message = event['message']
