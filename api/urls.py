@@ -25,5 +25,6 @@ urlpatterns = [
          ),
     path('registration/', include('rest_auth.registration.urls')),
     path('', include('rest_auth.urls')),
+    path('', include('rest_framework.urls', namespace='rest_framework')),
     path('login/', LoginView.as_view(), name='account_email_verification_sent'),
 ]

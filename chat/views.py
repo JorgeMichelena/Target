@@ -29,11 +29,18 @@ class ChatRoom(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         match = get_object_or_404(Match, id=kwargs['match_id'])
-        messages = match.chatlog.all().order_by('creation_date').select_related('author')
+        page = 1
+        per_page = 20
+        if 'page' in kwargs and kwargs['page']>0:
+            page = kwargs['page']
+        offset = (page-1)*per_page
+        messages = match.chatlog.all().order_by('-date_sent').select_related('author')[offset : offset+per_page]
         chat = ''
-        for msg in messages:
-            chat += '>>' + msg.author.username + ':\n' + msg.content + '\n\n'
+        size = len(messages)
+        for i in range(size):
+            chat += '>>' + messages[size-i-1].author.username + ':\n' + messages[size-i-1].content + '\n\n'
         context['chat'] = chat
+        context['num_page'] = page
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -42,13 +49,3 @@ class ChatRoom(TemplateView):
         if not (match.target1.user == user or match.target2.user == user):
             raise Http404
         return super(ChatRoom, self).dispatch(request, *args, **kwargs)
-
-@csrf_exempt
-@login_required
-def onesignal_register(request):
-    user = User.objects.get(pk=request.user.id)
-    player_id = request.POST.get('playerId')
-    if player_id:
-        user.onesignal_playerId = player_id
-        user.save()
-        return HttpResponse('Done')
