@@ -15,4 +15,3 @@ class User(AbstractUser):
         max_length=1,
         default='N',
     )
-    onesignal_playerId = models.CharField(max_length=40, default='')

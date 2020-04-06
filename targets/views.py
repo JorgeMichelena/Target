@@ -4,7 +4,6 @@ from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import viewsets, permissions
 from targets.validators import less_than_10_targets
 from django.contrib.gis.db.models.functions import Distance
-from chat import push_notifications
 
 
 class TopicViewSet(viewsets.ReadOnlyModelViewSet):
@@ -34,6 +33,3 @@ def search_for_match(target_title):
         if candidate.distance.m <= candidate.radius+target.radius and candidate.topic == target.topic and candidate.user!=target.user:
             match = Match(target1=target, target2=candidate)
             match.save()
-            player_id = candidate.user.onesignal_playerId
-            message = f'New match made with {target.user.username}!'
-            push_notifications.send_notification('match', match.id, message, player_id)
