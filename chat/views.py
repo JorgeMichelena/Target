@@ -7,8 +7,6 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.http import HttpResponse
 from users.models import User
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):

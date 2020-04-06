@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib.gis import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     path('chat/', include('chat.urls')),
     path('api/v1/', include('api.urls')),
