@@ -43,6 +43,7 @@ class ChatRoom(TemplateView):
         match.mark_messages_as_seen(self.request.user.id)
         return context
 
+
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
         match = get_object_or_404(Match, id=kwargs['match_id'])
