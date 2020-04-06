@@ -42,6 +42,7 @@ class ChatRoom(TemplateView):
         context['num_page'] = page
         return context
 
+
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user
         match = get_object_or_404(Match, id=kwargs['match_id'])
