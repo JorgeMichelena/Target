@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.http import HttpResponse
 from users.models import User
+from django.core.paginator import Paginator
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -27,19 +28,22 @@ class ChatRoom(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         match = get_object_or_404(Match, id=kwargs['match_id'])
+        messages = match.chatlog.all().order_by('-date_sent').select_related('author')
+        paginator = Paginator(messages, 20)
         page = 1
-        per_page = 20
-        if 'page' in kwargs and kwargs['page']>0:
-            page = kwargs['page']
-        offset = (page-1)*per_page
-        messages = match.chatlog.all().order_by('-date_sent').select_related('author')[offset : offset+per_page]
+        if 'page' in self.request.GET and self.request.GET['page'].isdigit():
+            if int(self.request.GET['page']) > paginator.num_pages:
+                page = paginator.num_pages
+            else:
+                page = self.request.GET['page']
         chat = ''
-        size = len(messages)
-        for i in range(size):
-            chat += '>>' + messages[size-i-1].author.username + ':\n' + messages[size-i-1].content + '\n\n'
+        chatlog = paginator.page(page).object_list
+        for msg in chatlog:
+            chat = '>>' + msg.author.username + ':\n' + msg.content + '\n\n' + chat
         context['chat'] = chat
         context['num_page'] = page
         return context
+
 
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user

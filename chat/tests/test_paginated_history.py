@@ -50,15 +50,15 @@ class PaginatedHistoryTest(TestCase):
 
     def test_see_paginated_history_indicating_page(self):
         self.client.force_login(self.user1)
-        response1 = self.client.get(f'/chat/{self.match.id}/1/')
+        response1 = self.client.get(f'/chat/{self.match.id}/?page=1')
         expected_page1 = ''
         for i in range(20):
             expected_page1 += '>>' + self.messages[40+i].author.username + ':\n' + self.messages[40+i].content + '\n\n'
-        response2 = self.client.get(f'/chat/{self.match.id}/2/')
+        response2 = self.client.get(f'/chat/{self.match.id}/?page=2')
         expected_page2 = ''
         for i in range(20):
             expected_page2 += '>>' + self.messages[20+i].author.username + ':\n' + self.messages[20+i].content + '\n\n'
-        response3 = self.client.get(f'/chat/{self.match.id}/3/')
+        response3 = self.client.get(f'/chat/{self.match.id}/?page=3')
         expected_page3 = ''
         for i in range(20):
             expected_page3 += '>>' + self.messages[i].author.username + ':\n' + self.messages[i].content + '\n\n'
@@ -66,3 +66,17 @@ class PaginatedHistoryTest(TestCase):
         self.assertEqual(response1.context['chat'], expected_page1)
         self.assertEqual(response2.context['chat'], expected_page2)
         self.assertEqual(response3.context['chat'], expected_page3)
+
+    def test_see_paginated_history_indicating_pages_out_of_range(self):
+        self.client.force_login(self.user1)
+        response1 = self.client.get(f'/chat/{self.match.id}/?page={random.randint(-1000,0)}')
+        expected_page1 = ''
+        for i in range(20):
+            expected_page1 += '>>' + self.messages[40+i].author.username + ':\n' + self.messages[40+i].content + '\n\n'
+        response2 = self.client.get(f'/chat/{self.match.id}/?page={random.randint(4,1000)}')
+        expected_page2 = ''
+        for i in range(20):
+            expected_page2 += '>>' + self.messages[i].author.username + ':\n' + self.messages[i].content + '\n\n'
+        
+        self.assertEqual(response1.context['chat'], expected_page1)
+        self.assertEqual(response2.context['chat'], expected_page2)
