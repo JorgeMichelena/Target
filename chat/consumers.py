@@ -60,3 +60,10 @@ class ChatConsumer(WebsocketConsumer):
             'message': message,
             'author': author,
         }))
+
+def seeMessages(match_id, user_id):
+    match = Match.objects.get(id=match_id)
+    messages = match.chatlog.filter(date_seen__isnull=True).order_by('id').select_related('author').exclude(author__id=user_id)
+    for msg in messages:
+        msg.seen()
+        msg.save()
