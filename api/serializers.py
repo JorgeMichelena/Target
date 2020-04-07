@@ -49,7 +49,18 @@ class TargetSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     target1 = TargetSerializer()
     target2 = TargetSerializer()
-
+    unread_messages = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField() 
     class Meta:
         model = Match
-        fields = ['pk', 'creation_date', 'target1', 'target2']
+        fields = ['pk', 'date_match', 'unread_messages', 'last_message', 'target1', 'target2']
+    
+    def get_unread_messages(self, instance):
+        user_id = self.context['request'].user.id
+        return instance.chatlog.filter(date_seen__isnull=True).exclude(author__id=user_id).count()
+
+    def get_last_message(self, instance):
+        last_msg = ''
+        if instance.chatlog.filter(date_seen__isnull=True).count() != 0:
+            last_msg = instance.chatlog.filter(date_seen__isnull=True).order_by('id').reverse()[0].content
+        return last_msg
