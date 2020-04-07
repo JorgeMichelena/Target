@@ -1,19 +1,17 @@
 from targets.factory import TopicFactory
 from users.factory import UserFactory
 from rest_framework.test import APITestCase
-from targets.models import Topic
 from rest_framework import status
-from rest_framework.test import force_authenticate
-import json
-import random
-from factory.faker import faker
+
 
 class SeeTopicsTest(APITestCase):
+
     def setUp(self):
         topics = TopicFactory.create_batch(5)
-        for topic in topics: topic.save()
+        for topic in topics:
+            topic.save()
         self.user = UserFactory()
-    
+
     def test_see_topics_when_logged_in(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.get('/api/v1/topics/')
