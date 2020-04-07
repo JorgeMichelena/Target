@@ -1,24 +1,17 @@
-from targets.factory import TopicFactory, TargetFactory
+from targets.factory import TargetFactory
 from users.factory import UserFactory
 from rest_framework.test import APITestCase
 from rest_framework import status
 
 
 class SeeMyTargetsTest(APITestCase):
-
     maxDiff = None
 
     def setUp(self):
-        self.user = UserFactory()
-        self.user.save()
-        self.user2 = UserFactory()
-        self.user2.save()
-        topic = TopicFactory()
-        topic.save()
-        self.target_1 = TargetFactory(user=self.user, topic=topic)
-        self.target_2 = TargetFactory(user=self.user, topic=topic)
-        self.target_1.save()
-        self.target_2.save()
+        self.target_1 = TargetFactory.create()
+        self.user = self.target_1.user
+        self.target_2 = TargetFactory.create(user=self.user)
+        self.user2 = UserFactory.create()
 
     def test_see_my_targets_when_logged_in(self):
         self.client.force_authenticate(self.user)

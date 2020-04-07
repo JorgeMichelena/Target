@@ -1,9 +1,10 @@
 import factory
+from factory.django import DjangoModelFactory as Factory
 from factory.faker import faker
 from users.models import User
 
 
-class UserFactory(factory.Factory):
+class UserFactory(Factory):
     class Meta:
         model = User
 

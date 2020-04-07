@@ -41,8 +41,12 @@ class ConfirmEmailTest(APITestCase):
                 'gender': 'M',
                 }
         response_signup = self.client.post('/api/v1/registration/', data)
-        response_login = self.client.post('/api/v1/login/', {'username': 'TestUser', 'email': email, 'password': password})
-
+        response_login = self.client.post('/api/v1/login/',
+                                          {'username': 'TestUser',
+                                           'email': email,
+                                           'password': password
+                                           }
+                                          )
         self.assertEqual(response_signup.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response_login.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_login.json()['non_field_errors'], ['E-mail is not verified.'])

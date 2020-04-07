@@ -10,9 +10,7 @@ from targets.factory import truncate
 class CreateTargetTest(APITestCase):
     def setUp(self):
         self.topic = TopicFactory()
-        self.topic.save()
         self.user = UserFactory()
-        self.user.save()
         self.title = faker.Faker().word()
         self.radius = randint(0, 1000)
         self.latitude = randint(-180, 180) + truncate(random(), 5)
@@ -31,7 +29,6 @@ class CreateTargetTest(APITestCase):
                 }
         expected = data.copy()
         expected['location'] = self.location
-
         response = self.client.post('/api/v1/targets/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertDictEqual(response.json(), expected)
