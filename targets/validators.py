@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
 
+
 def validate_coordinates(value):
     latitude = value.x
     longitude = value.y
@@ -22,9 +23,3 @@ def less_than_max_targets(user):
         raise DRF_ValidationError(
             _(f'You must have less than {settings.MAX_TARGETS} targets to be able to create a new one')
         )
-
-def less_than_10_targets(user):
-    if user.targets.count>=10:
-        raise DRF_ValidationError(
-            _('You must have less than 10 targets to be able to create a new one')
-       )
