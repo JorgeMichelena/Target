@@ -1,14 +1,11 @@
 from rest_framework.test import APITestCase
 from users.factory import UserFactory
-from targets.models import Topic, Target
 from chat.models import Match
 from rest_framework import status
-from rest_framework.test import force_authenticate
 from targets.factory import TopicFactory
 from targets.factory import truncate
 import factory
 import random
-import json
 
 
 class MatchTest(APITestCase):
@@ -25,38 +22,34 @@ class MatchTest(APITestCase):
         lat = truncate(random.uniform(-180, 150), 5)
         lon = truncate(random.uniform(-90, 70), 5)
         location1 = str({'type': 'point',
-                     'coordinates':[lat,lon]
-                    })
+                         'coordinates': [lat, lon]
+                         })
         location2 = str({'type': 'point',
-                     'coordinates':[lat+1,lon+1]
-                    })
+                         'coordinates': [lat+1, lon+1]
+                         })
         location3 = str({'type': 'point',
-                     'coordinates':[lat+20,lon+15]
-                    })
-        self.data1 = {
-            'title' : factory.Faker('word').generate(),
-            'location' : location1,
-            'radius': random.randint(70000, 1000000),
-            'topic': self.topic1.name
-        }
-        self.data2 = {
-            'title' : factory.Faker('word').generate(),
-            'location' : location2,
-            'radius': random.randint(70000, 1000000),
-            'topic': self.topic1.name
-        }
-        self.data3 = {
-            'title' : factory.Faker('word').generate(),
-            'location' : location2,
-            'radius': random.randint(70000, 1000000),
-            'topic': self.topic2.name
-        }
-        self.data4 = {
-            'title' : factory.Faker('word').generate(),
-            'location' : location3,
-            'radius': random.randint(0, 7000),
-            'topic': self.topic1.name
-        }
+                         'coordinates': [lat+20, lon+15]
+                         })
+        self.data1 = {'title': factory.Faker('word').generate(),
+                      'location': location1,
+                      'radius': random.randint(70000, 1000000),
+                      'topic': self.topic1.name
+                      }
+        self.data2 = {'title': factory.Faker('word').generate(),
+                      'location': location2,
+                      'radius': random.randint(70000, 1000000),
+                      'topic': self.topic1.name
+                      }
+        self.data3 = {'title': factory.Faker('word').generate(),
+                      'location': location2,
+                      'radius': random.randint(70000, 1000000),
+                      'topic': self.topic2.name
+                      }
+        self.data4 = {'title': factory.Faker('word').generate(),
+                      'location': location3,
+                      'radius': random.randint(0, 7000),
+                      'topic': self.topic1.name
+                      }
 
     def test_create_targets_that_match(self):
         self.client.force_authenticate(user=self.user1)
@@ -99,4 +92,4 @@ class MatchTest(APITestCase):
         matches = Match.objects.all()
         self.assertEqual(response1.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response2.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(len(matches), 0)  
+        self.assertEqual(len(matches), 0)

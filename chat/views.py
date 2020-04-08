@@ -1,19 +1,23 @@
 from rest_framework import viewsets, permissions
 from api.serializers import MatchSerializer
-from targets.models import Target
 from chat.models import Match
 from django.db.models import Q
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
+
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = MatchSerializer
-    
+
     def get_queryset(self):
         user_id = self.request.user.id
-        return Match.objects.filter(Q(target1__user_id=user_id) | Q(target2__user_id=user_id)).select_related('target1', 'target2')
+        return (Match.objects
+                     .filter(Q(target1__user_id=user_id) | Q(target2__user_id=user_id))
+                     .select_related('target1', 'target2')
+                )
+
 
 class ChatRoom(TemplateView):
     template_name = 'chat/room.html'

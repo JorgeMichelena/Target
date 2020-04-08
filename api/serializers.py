@@ -5,6 +5,7 @@ from targets.models import Topic, Target
 from targets.validators import less_than_max_targets
 from chat.models import Match
 
+
 class UserDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -47,6 +48,7 @@ class TargetSerializer(serializers.ModelSerializer):
 class MatchSerializer(serializers.ModelSerializer):
     target1 = TargetSerializer()
     target2 = TargetSerializer()
+
     class Meta:
         model = Match
         fields = ['pk', 'date_match', 'target1', 'target2']

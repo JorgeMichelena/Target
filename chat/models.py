@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
+
 class Match(models.Model):
     date_match = models.DateTimeField(auto_now_add=True)
     chat_start = models.DateTimeField(null=True)
@@ -10,8 +11,10 @@ class Match(models.Model):
 
     def startChat(self):
         self.chat_start = timezone.now()
+
     def endChat(self):
         self.chat_end = timezone.now()
+
 
 class Message(models.Model):
     content = models.TextField()
@@ -19,5 +22,3 @@ class Message(models.Model):
     date_seen = models.DateTimeField(null=True)
     chat = models.ForeignKey('Match', on_delete=models.CASCADE, related_name='chatlog')
     author = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='messages')
-
- 

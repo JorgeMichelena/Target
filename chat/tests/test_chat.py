@@ -1,48 +1,44 @@
-
 from channels.testing import ChannelsLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
-
 from django.test import Client
 from chat.models import Match
 from targets.factory import TopicFactory, TargetFactory
 from users.models import User
-from targets.models import Topic, Target
 from rest_framework import status
 
+
 class ChatTests(ChannelsLiveServerTestCase):
-    serve_static = True 
+    serve_static = True
+
     def setUp(self):
         super().setUpClass()
         self.client = Client()
-        #define data to make users and then register them
-        data1 = { 
-            'username': 'usuario1',
-            'email': 'usuario1@example.com',
-            'password1': 'test1234password',
-            'password2': 'test1234password',
-            'gender': User.MALE
-        }
-        data2 = { 
-            'username': 'usuario2',
-            'email': 'usuario2@example.com',
-            'password1': 'test1234password',
-            'password2': 'test1234password',
-            'gender': User.MALE
-        }
-        data3 = { 
-            'username': 'usuario3',
-            'email': 'usuario3@example.com',
-            'password1': 'test1234password',
-            'password2': 'test1234password',
-            'gender': User.MALE
-        }
+        # define data to make users and then register them
+        data1 = {'username': 'usuario1',
+                 'email': 'usuario1@example.com',
+                 'password1': 'test1234password',
+                 'password2': 'test1234password',
+                 'gender': User.MALE
+                 }
+        data2 = {'username': 'usuario2',
+                 'email': 'usuario2@example.com',
+                 'password1': 'test1234password',
+                 'password2': 'test1234password',
+                 'gender': User.MALE
+                 }
+        data3 = {'username': 'usuario3',
+                 'email': 'usuario3@example.com',
+                 'password1': 'test1234password',
+                 'password2': 'test1234password',
+                 'gender': User.MALE
+                 }
         self.client.post('/api/v1/registration/', data1)
         self.client.post('/api/v1/registration/', data2)
         self.client.post('/api/v1/registration/', data3)
 
-        #Save models in database
+        # Save models in database
         self.users = User.objects.all()
         self.user1 = self.users[0]
         self.user2 = self.users[1]
@@ -58,14 +54,13 @@ class ChatTests(ChannelsLiveServerTestCase):
         self.target1.save()
         self.target2.save()
         self.match1.save()
-        
-        #The directory in wich chromedriver's binary is in must be added to $PATH
+
+        # The directory in wich chromedriver's binary is in must be added to $PATH
         self.driver = webdriver.Chrome()
 
     def tearDown(self):
         self.driver.quit()
         super().tearDown()
-        
 
     def test_chat_message_posted_then_seen_in_different_windows_same_user_logged(self):
         self._authenticate_user(self.user1)
@@ -82,7 +77,6 @@ class ChatTests(ChannelsLiveServerTestCase):
         WebDriverWait(self.driver, 2).until(lambda _:
             'hello' in self._chat_log_value(),
             'Message was not received by window 2 from window 1')
-        
 
     def test_when_chat_message_posted_then_seen_by_the_other_user(self):
         self._authenticate_user(self.user1)
@@ -113,9 +107,9 @@ class ChatTests(ChannelsLiveServerTestCase):
 
         self.client.login(name=self.user3.username, password='test1234password')
         response = self.client.get(self.live_server_url+f'/chat/{self.match1.id}/')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)  
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    #Methods used in testing
+    # Methods used in testing
     def _enter_chat_room(self, match_id):
         self.driver.get(self.live_server_url + f'/chat/{match_id}')
 
