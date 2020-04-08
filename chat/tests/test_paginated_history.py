@@ -1,21 +1,15 @@
-from rest_framework.test import APITestCase
 from users.factory import UserFactory
-from targets.models import Topic, Target
 from chat.models import Match
-from rest_framework import status
-from rest_framework.test import force_authenticate
 from targets.factory import TopicFactory, TargetFactory
-from targets.factory import truncate
 from chat.factory import MessageFactory
-import factory
 import random
-import json
-from django.test import Client, TestCase
+from django.test import TestCase
+
 
 class PaginatedHistoryTest(TestCase):
     def setUp(self):
         num_messages = 60
-        
+
         self.user1 = UserFactory()
         self.user2 = UserFactory()
         self.user1.save()
@@ -28,18 +22,15 @@ class PaginatedHistoryTest(TestCase):
         self.target2.save()
         self.match = Match(target1=self.target1, target2=self.target2)
         self.match.save()
-
         self.messages = []
         for i in range(num_messages):
-            if i%2==0:
+            if i % 2 == 0:
                 self.messages.append(MessageFactory(author=self.user1, chat=self.match))
             else:
                 self.messages.append(MessageFactory(author=self.user2, chat=self.match))
-        
         for msg in self.messages:
             msg.save()
 
-        
     def test_see_paginated_history_newest_20_messages_by_default(self):
         self.client.force_login(self.user1)
         response = self.client.get(f'/chat/{self.match.id}/')
@@ -62,7 +53,7 @@ class PaginatedHistoryTest(TestCase):
         expected_page3 = ''
         for i in range(20):
             expected_page3 += '>>' + self.messages[i].author.username + ':\n' + self.messages[i].content + '\n\n'
-        
+
         self.assertEqual(response1.context['chat'], expected_page1)
         self.assertEqual(response2.context['chat'], expected_page2)
         self.assertEqual(response3.context['chat'], expected_page3)
@@ -77,6 +68,6 @@ class PaginatedHistoryTest(TestCase):
         expected_page2 = ''
         for i in range(20):
             expected_page2 += '>>' + self.messages[i].author.username + ':\n' + self.messages[i].content + '\n\n'
-        
+
         self.assertEqual(response1.context['chat'], expected_page1)
         self.assertEqual(response2.context['chat'], expected_page2)

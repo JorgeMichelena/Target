@@ -22,6 +22,7 @@ class MatchViewSet(viewsets.ReadOnlyModelViewSet):
                 )
 
 
+
 class ChatRoom(TemplateView):
     template_name = 'chat/room.html'
 
@@ -43,7 +44,6 @@ class ChatRoom(TemplateView):
         context['chat'] = chat
         context['num_page'] = page
         return context
-
 
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user

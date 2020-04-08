@@ -13,7 +13,7 @@ class MatchFactory(Factory):
         model = Match
 
 
-class MessageFactory(factory.Factory):
+class MessageFactory(Factory):
     class Meta:
         model = Message
     content = factory.Faker('text')

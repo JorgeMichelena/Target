@@ -5,7 +5,8 @@ from chat.models import Message, Match
 
 
 class ChatConsumer(WebsocketConsumer):
-    connected = set(( ))
+    connected = set()
+    
     def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.user = self.scope['user']
