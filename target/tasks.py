@@ -4,7 +4,6 @@ import os
 import django
 import datetime
 django.setup()
-from django.apps import apps
 from targets.models import Target
 
 
@@ -12,6 +11,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'target.settings')
 app = Celery('target')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
+
 
 @task()
 def delete_one_week_old_targets():

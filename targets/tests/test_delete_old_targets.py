@@ -1,15 +1,10 @@
 from targets.factory import TopicFactory, TargetFactory
-from factory.faker import faker
 from users.factory import UserFactory
 from rest_framework.test import APITestCase
-from targets.models import Topic, Target
-from rest_framework import status
-from rest_framework.test import force_authenticate
-from api.serializers import TargetSerializer
+from targets.models import Target
 from target.tasks import delete_one_week_old_targets
-from rest_framework.renderers import JSONRenderer
-import json
 import datetime
+
 
 class DeleteOldTargetsTest(APITestCase):
     def setUp(self):
