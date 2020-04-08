@@ -1,44 +1,38 @@
-
 from channels.testing import ChannelsLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
-
 from django.test import Client
 from chat.models import Match
 from targets.factory import TopicFactory, TargetFactory
 from users.models import User
-from targets.models import Topic, Target
-from rest_framework import status
 from time import sleep
 import factory
 
 
 class UnreadMessagesTests(ChannelsLiveServerTestCase):
-    serve_static = True 
+    serve_static = True
+
     def setUp(self):
         super().setUpClass()
         self.client = Client()
-        #define data to make users and then register them
-        data1 = { 
-            'username': 'usuario1',
-            'email': 'usuario1@example.com',
-            'password1': 'test1234password',
-            'password2': 'test1234password',
-            'gender': User.MALE
-        }
-        data2 = { 
-            'username': 'usuario2',
-            'email': 'usuario2@example.com',
-            'password1': 'test1234password',
-            'password2': 'test1234password',
-            'gender': User.MALE
-        }
-
+        # define data to make users and then register them
+        data1 = {'username': 'usuario1',
+                 'email': 'usuario1@example.com',
+                 'password1': 'test1234password',
+                 'password2': 'test1234password',
+                 'gender': User.MALE
+                 }
+        data2 = {'username': 'usuario2',
+                 'email': 'usuario2@example.com',
+                 'password1': 'test1234password',
+                 'password2': 'test1234password',
+                 'gender': User.MALE
+                 }
         self.client.post('/api/v1/registration/', data1)
         self.client.post('/api/v1/registration/', data2)
 
-        #Save models in database
+        # Save models in database
         self.users = User.objects.all()
         self.user1 = self.users[0]
         self.user2 = self.users[1]
@@ -57,14 +51,12 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
         self.text2 = factory.Faker('word').generate()
         self.text3 = factory.Faker('word').generate()
 
-
-        #The directory in wich chromedriver's binary is in must be added to $PATH
+        # The directory in wich chromedriver's binary is in must be added to $PATH
         self.driver = webdriver.Chrome()
 
     def tearDown(self):
         self.driver.quit()
         super().tearDown()
-        
 
     def test_see_unread_messages_before_entering_chatroom(self):
         self._authenticate_user(self.user1)
@@ -83,7 +75,7 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
         WebDriverWait(self.driver, 2).until(lambda _:
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1')
-        
+
         self.client.logout()
         self.client.login(username=self.user2.username, password='test1234password')
         response = self.client.get(f'/api/v1/matches/{self.match1.id}/')
@@ -107,14 +99,13 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
         WebDriverWait(self.driver, 2).until(lambda _:
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1')
-        
+
         self.client.logout()
         self._authenticate_user(self.user2)
         self._enter_chat_room(self.match1.id)
-        #Need a little delay, otherwise I get a response before messages can update their date_seen field
+        # Need a little delay, otherwise I get a response before messages can update their date_seen field
         sleep(0.1)
         response = self.client.get(f'/api/v1/matches/{self.match1.id}/')
-        
         self.assertEqual(response.json()['unread_messages'], 0)
         self.assertEqual(response.json()['last_message'], '')
 
@@ -135,18 +126,17 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
         WebDriverWait(self.driver, 2).until(lambda _:
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1')
-        
+
         response_user1 = self.client.get(f'/api/v1/matches/{self.match1.id}/')
-        
+
         self.client.logout()
         self.client.login(username=self.user2.username, password='test1234password')
         response_user2 = self.client.get(f'/api/v1/matches/{self.match1.id}/')
-        
+
         self.assertEqual(response_user1.json()['unread_messages'], 0)
         self.assertEqual(response_user1.json()['last_message'], self.text3)
         self.assertEqual(response_user2.json()['unread_messages'], 3)
         self.assertEqual(response_user2.json()['last_message'], self.text3)
-        
 
     #Methods used in testing
     def _enter_chat_room(self, match_id):
