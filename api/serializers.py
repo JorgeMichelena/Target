@@ -38,5 +38,3 @@ class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
         fields = ['pk', 'title', 'location', 'radius', 'topic']
-
-
