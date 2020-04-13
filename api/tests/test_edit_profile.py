@@ -4,6 +4,7 @@ from users.models import User
 from rest_framework import status
 from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_auth.views import UserDetailsView
+from factory.faker import faker
 
 
 class EditProfileTests(APITestCase):
@@ -12,6 +13,9 @@ class EditProfileTests(APITestCase):
         self.request_factory = APIRequestFactory()
         self.user1 = UserFactory()
         self.view = UserDetailsView.as_view()
+        self.fname = faker.Faker().first_name()
+        self.lname = faker.Faker().last_name()
+        self.email = faker.Faker().email()
 
     def test_logged_user_changes_editable_fields(self):
         # arrange
@@ -19,9 +23,9 @@ class EditProfileTests(APITestCase):
         old_last_name = self.user1.last_name
         old_gender = self.user1.gender
         data = {'username': self.user1.username,
-                'first_name': 'new_first_name',
-                'last_name': 'new_last_name',
-                'gender': User.FEMALE,
+                'first_name': self.fname,
+                'last_name': self.lname,
+                'gender': User.Gender.FEMALE,
                 }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
@@ -33,12 +37,12 @@ class EditProfileTests(APITestCase):
         new_gender = self.user1.gender
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(new_first_name, 'new_first_name')
-        self.assertEqual(new_last_name, 'new_last_name')
-        self.assertEqual(new_gender, User.FEMALE)
-        self.assertFalse(new_first_name == old_first_name)
-        self.assertFalse(new_last_name == old_last_name)
-        self.assertFalse(new_gender == old_gender)
+        self.assertEqual(new_first_name, self.fname)
+        self.assertEqual(new_last_name, self.lname)
+        self.assertEqual(new_gender, User.Gender.FEMALE)
+        self.assertNotEqual(new_first_name, old_first_name)
+        self.assertNotEqual(new_last_name, old_last_name)
+        self.assertNotEqual(new_gender, old_gender)
 
     def test_logged_user_changes_pk(self):
         # arrange
@@ -54,13 +58,13 @@ class EditProfileTests(APITestCase):
         new_pk = self.user1.pk
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_pk, old_pk)
-        self.assertFalse(new_pk == '1000')
+        self.assertNotEqual(new_pk, '1000')
 
     def test_logged_user_changes_email(self):
         # arrange
         old_email = self.user1.email
         data = {'username': self.user1.username,
-                'email': 'newemail@example.com',
+                'email': self.email,
                 }
         request = self.request_factory.put('/api/v1', data, format='json')
         force_authenticate(request, self.user1)
@@ -71,15 +75,15 @@ class EditProfileTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(new_email, old_email)
-        self.assertFalse(new_email == 'newemail@example.com')
+        self.assertNotEqual(new_email, self.email)
 
     def test_not_logged_user_changes_editable_fields(self):
         # arrange
         old_first_name = self.user1.first_name
         old_last_name = self.user1.last_name
         data = {'username': self.user1.username,
-                'first_name': 'new_first_name',
-                'last_name': 'new_last_name',
+                'first_name': self.fname,
+                'last_name': self.lname,
                 }
         request = self.request_factory.put('/api/v1', data, format='json')
         # act
@@ -105,4 +109,4 @@ class EditProfileTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(new_gender, old_gender)
-        self.assertFalse(new_gender == 'Male')
+        self.assertNotEqual(new_gender, 'Male')

@@ -1,21 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    MALE = 'M'
-    FEMALE = 'F'
-    OTHER = 'O'
-    NOT_SPECIFIED = 'N'
-    GENDERS = [
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        (OTHER, 'Other'),
-        (NOT_SPECIFIED, 'Not Specified'),
-    ]
+    class Gender(models.TextChoices):
+        MALE = 'M', _('Male')
+        FEMALE = 'F', _('Female')
+        OTHER = 'O', _('Other')
+        NOT_SPECIFIED = 'N', _('Not specified')
 
     gender = models.CharField(
-        choices=GENDERS,
+        choices=Gender.choices,
         max_length=1,
-        default='',
+        default='N',
     )

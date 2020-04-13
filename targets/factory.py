@@ -1,8 +1,8 @@
-from factory.faker import faker
 from targets.models import Topic, Target
 from users.factory import UserFactory
 from django.contrib.gis.geos import Point
 from factory.django import DjangoModelFactory as Factory
+from faker.providers import BaseProvider
 import random
 import math
 import factory
@@ -13,19 +13,28 @@ def truncate(number, digits):
     return math.trunc(stepper * number) / stepper
 
 
+class DjangoGeoPointProvider(BaseProvider):
+
+    def geo_point(self, **kwargs):
+        kwargs['coords_only'] = True
+        faker = factory.Faker('local_latlng', **kwargs)
+        coords = faker.generate()
+        return Point(x=float(coords[1]), y=float(coords[0]), srid=4326)
+
+
 class TopicFactory(Factory):
-    name = factory.Sequence(lambda n: f'Topic{n}')
+    name = factory.Faker('word')
 
     class Meta:
         model = Topic
 
 
 class TargetFactory(Factory):
-    title = faker.Faker().word()
+    factory.Faker.add_provider(DjangoGeoPointProvider)
+
+    title = factory.Faker('word')
     radius = random.randint(0, 1000)
-    lat = float(random.randint(-180, 180)) + truncate(random.random(), 5)
-    lon = float(random.randint(-90, 90)) + truncate(random.random(), 5)
-    location = Point(lat, lon)
+    location = factory.Faker('geo_point')
     topic = factory.SubFactory(TopicFactory)
     user = factory.SubFactory(UserFactory)
 
