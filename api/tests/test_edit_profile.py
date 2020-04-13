@@ -2,20 +2,20 @@ from users.factory import UserFactory
 from rest_framework.test import APITestCase
 from users.models import User
 from rest_framework import status
-from rest_framework.test import force_authenticate, APIRequestFactory
 from rest_auth.views import UserDetailsView
 from factory.faker import faker
+from django.urls import reverse
 
 
 class EditProfileTests(APITestCase):
 
     def setUp(self):
-        self.request_factory = APIRequestFactory()
         self.user1 = UserFactory()
         self.view = UserDetailsView.as_view()
         self.fname = faker.Faker().first_name()
         self.lname = faker.Faker().last_name()
         self.email = faker.Faker().email()
+        self.profile_url = reverse('rest_user_details')
 
     def test_logged_user_changes_editable_fields(self):
         # arrange
@@ -27,10 +27,9 @@ class EditProfileTests(APITestCase):
                 'last_name': self.lname,
                 'gender': User.Gender.FEMALE,
                 }
-        request = self.request_factory.put('/api/v1', data, format='json')
-        force_authenticate(request, self.user1)
+        self.client.force_authenticate(self.user1)
         # act
-        response = self.view(request)
+        response = self.client.put(self.profile_url, data)
         # assert
         new_first_name = self.user1.first_name
         new_last_name = self.user1.last_name
@@ -50,10 +49,9 @@ class EditProfileTests(APITestCase):
         data = {'pk': '1000',
                 'username': self.user1.username,
                 }
-        request = self.request_factory.put('/api/v1', data, format='json')
-        force_authenticate(request, self.user1)
+        self.client.force_authenticate(self.user1)
         # act
-        response = self.view(request)
+        response = self.client.put(self.profile_url, data)
         # assert
         new_pk = self.user1.pk
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -66,10 +64,9 @@ class EditProfileTests(APITestCase):
         data = {'username': self.user1.username,
                 'email': self.email,
                 }
-        request = self.request_factory.put('/api/v1', data, format='json')
-        force_authenticate(request, self.user1)
+        self.client.force_authenticate(self.user1)
         # act
-        response = self.view(request)
+        response = self.client.put(self.profile_url, data)
         # assert
         new_email = self.user1.email
 
@@ -85,9 +82,8 @@ class EditProfileTests(APITestCase):
                 'first_name': self.fname,
                 'last_name': self.lname,
                 }
-        request = self.request_factory.put('/api/v1', data, format='json')
         # act
-        response = self.view(request)
+        response = self.client.put(self.profile_url, data)
         # assert
         new_first_name = self.user1.first_name
         new_last_name = self.user1.last_name
@@ -100,10 +96,9 @@ class EditProfileTests(APITestCase):
         # arrange
         old_gender = self.user1.gender
         data = {'username': self.user1.username, 'gender': 'Male'}
-        request = self.request_factory.put('/api/v1', data, format='json')
-        force_authenticate(request, self.user1)
+        self.client.force_authenticate(self.user1)
         # act
-        response = self.view(request)
+        response = self.client.put(self.profile_url, data)
         # assert
         new_gender = self.user1.gender
 
