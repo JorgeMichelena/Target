@@ -3,32 +3,38 @@ from rest_framework import serializers
 from users.models import User
 from targets.models import Topic, Target
 
+
 class UserDetailsSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
-        fields = ('pk', 
-                'username', 
-                'email', 
-                'first_name', 
-                'last_name', 
-                'gender')
-        read_only_fields = ('email', 'pk')
-        
+        fields = ('pk',
+                  'username',
+                  'email',
+                  'first_name',
+                  'last_name',
+                  'gender')
+        read_only_fields = ['email']
+
+
 class RegisterSerializer(RegisterSerializer):
-    gender = serializers.ChoiceField(choices=User.GENDERS,)
-    
+
+    gender = serializers.ChoiceField(choices=User.Gender.choices,)
+
     def custom_signup(self, request, user):
         user.gender = self.validated_data.get('gender', '')
         user.save(update_fields=['gender'])
-    
+
+
 class TopicSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Topic
         fields = ['pk', 'name', 'picture']
 
+        
 class TargetSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Target
         fields = ['pk', 'title', 'location', 'radius', 'topic']
-
-

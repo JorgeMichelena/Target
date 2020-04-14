@@ -58,7 +58,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_gis',
 ]
 
-INSTALLED_APPS = PROJECT_APPS + DJANGO_APPS + THIRD_PARTY_APPS 
+INSTALLED_APPS = PROJECT_APPS + DJANGO_APPS + THIRD_PARTY_APPS
 
 SITE_ID = 1
 
@@ -79,7 +79,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,8 +92,6 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = 'target.wsgi.application'
 
 AUTH_USER_MODEL = 'users.User'
@@ -103,14 +101,14 @@ AUTH_USER_MODEL = 'users.User'
 
 DATABASES = {
     'default': {
-        'ENGINE' : os.getenv('DB_ENGINE'),
-        'NAME' : os.getenv('DB_NAME'),
-        'USER' : os.getenv('USER'),
-        'PASSWORD' : os.getenv('PASSWORD', ''),
-        'HOST' : os.getenv('HOST', 'localhost'),
-        'PORT' : os.getenv('PORT'),
-        'TEST' : {
-            'NAME' : 'testing_database',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('USER'),
+        'PASSWORD': os.getenv('PASSWORD', ''),
+        'HOST': os.getenv('HOST', 'localhost'),
+        'PORT': os.getenv('PORT'),
+        'TEST': {
+            'NAME': 'testing_database',
         },
     },
 }
@@ -121,22 +119,26 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER' : 'api.serializers.UserDetailsSerializer',
+    'USER_DETAILS_SERIALIZER': 'api.serializers.UserDetailsSerializer',
 }
 
 REST_AUTH_REGISTER_SERIALIZERS = {
