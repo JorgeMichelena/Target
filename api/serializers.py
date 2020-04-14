@@ -32,7 +32,7 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = ['pk', 'name', 'picture']
 
-
+        
 class TargetSerializer(serializers.ModelSerializer):
 
     class Meta:
