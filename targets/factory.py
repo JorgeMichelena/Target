@@ -4,13 +4,7 @@ from django.contrib.gis.geos import Point
 from factory.django import DjangoModelFactory as Factory
 from faker.providers import BaseProvider
 import random
-import math
 import factory
-
-
-def truncate(number, digits):
-    stepper = 10.0 ** digits
-    return math.trunc(stepper * number) / stepper
 
 
 class DjangoGeoPointProvider(BaseProvider):
@@ -40,4 +34,3 @@ class TargetFactory(Factory):
 
     class Meta:
         model = Target
-        exclude = ('lat', 'lon',)
