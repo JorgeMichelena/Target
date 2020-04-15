@@ -34,4 +34,3 @@ class TargetFactory(Factory):
 
     class Meta:
         model = Target
-        exclude = ('lat', 'lon',)
