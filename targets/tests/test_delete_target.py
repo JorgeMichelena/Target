@@ -16,7 +16,7 @@ class DeleteTargetTest(APITestCase):
 
     def test_delete_my_target(self):
         self.client.force_authenticate(self.user)
-        target1_url = reverse('target-detail', args=[self.target_1.pk])
+        target1_url = reverse('target-detail', kwargs={'pk': self.target_1.pk})
         response_delete = self.client.delete(target1_url)
         response_get = self.client.get(self.targets_url)
         expected_target = {'pk': self.target_2.pk,
@@ -33,13 +33,13 @@ class DeleteTargetTest(APITestCase):
         self.assertCountEqual(response_get.json(), expected_list)
 
     def test_delete_when_not_logged_in(self):
-        target1_url = reverse('target-detail', args=[self.target_1.pk])
+        target1_url = reverse('target-detail', kwargs={'pk': self.target_1.pk})
         response = self.client.delete(target1_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_cant_delete_other_users_targets(self):
         self.client.force_authenticate(self.user)
-        target3_url = reverse('target-detail', args=[self.target_3.pk])
+        target3_url = reverse('target-detail', kwargs={'pk': self.target_3.pk})
         response_delete = self.client.delete(target3_url)
         self.client.logout()
         self.client.force_authenticate(self.user2)
