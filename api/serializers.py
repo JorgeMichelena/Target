@@ -2,6 +2,7 @@ from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 from users.models import User
 from targets.models import Topic, Target
+from targets.validators import less_than_max_targets
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
@@ -38,3 +39,7 @@ class TargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Target
         fields = ['pk', 'title', 'location', 'radius', 'topic']
+
+    def create(self, validated_data):
+        less_than_max_targets(self.context['request'].user)
+        return super(TargetSerializer, self).create(validated_data)
