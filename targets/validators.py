@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
 
-
 def validate_coordinates(value):
     latitude = value.x
     longitude = value.y
