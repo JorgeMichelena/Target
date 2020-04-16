@@ -20,3 +20,4 @@ class Target(gis_models.Model):
     radius = models.PositiveIntegerField()
     location = gis_models.PointField(geography=True,
                                      validators=[validate_coordinates])
+    creation_date = models.DateField(auto_now_add=True)

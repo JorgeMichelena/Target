@@ -2,6 +2,7 @@ from django.contrib.gis import admin
 from targets.models import Topic, Target
 from users.models import User
 
+
 class TopicAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Name', {'fields': ['name']}),
