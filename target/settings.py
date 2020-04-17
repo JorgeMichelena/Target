@@ -178,8 +178,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 
 # Celery configurations
 
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BROKER_URL = os.getenv('BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('BROKER_URL')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
