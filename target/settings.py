@@ -192,7 +192,7 @@ CELERY_BEAT_SCHEDULE = {
     }
 }
 
-#Channels
+# Channels
 
 ASGI_APPLICATION = "target.routing.application"
 CHANNEL_LAYERS = {

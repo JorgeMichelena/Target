@@ -44,7 +44,8 @@ class TargetSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         less_than_max_targets(self.context['request'].user)
         return super(TargetSerializer, self).create(validated_data)
-        
+
+
 class MatchSerializer(serializers.ModelSerializer):
     target1 = TargetSerializer()
     target2 = TargetSerializer()

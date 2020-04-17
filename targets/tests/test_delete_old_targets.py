@@ -1,5 +1,4 @@
-from targets.factory import TopicFactory, TargetFactory
-from users.factory import UserFactory
+from targets.factory import TargetFactory
 from rest_framework.test import APITestCase
 from targets.models import Target
 from target.tasks import delete_one_week_old_targets
