@@ -25,7 +25,7 @@ class ChatRoom(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         match = get_object_or_404(Match, id=kwargs['match_id'])
-        messages = match.chatlog.all().order_by('date_sent').select_related('author')
+        messages = match.chatlog.all().order_by('creation_date').select_related('author')
         chat = ''
         for msg in messages:
             chat += '>>' + msg.author.username + ':\n' + msg.content + '\n\n'

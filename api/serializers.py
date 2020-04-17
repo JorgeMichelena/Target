@@ -52,4 +52,4 @@ class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Match
-        fields = ['pk', 'date_match', 'target1', 'target2']
+        fields = ['pk', 'creation_date', 'target1', 'target2']
