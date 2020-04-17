@@ -5,7 +5,7 @@ from django.utils import timezone
 class Match(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     chat_start = models.DateTimeField(null=True)
-    #chat_end = models.DateTimeField(null=True)
+    chat_end = models.DateTimeField(null=True)
     target1 = models.ForeignKey('targets.Target', on_delete=models.CASCADE, related_name='matches1')
     target2 = models.ForeignKey('targets.Target', on_delete=models.CASCADE, related_name='matches2')
 
