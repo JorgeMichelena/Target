@@ -9,11 +9,8 @@ class Match(models.Model):
     target1 = models.ForeignKey('targets.Target', on_delete=models.CASCADE, related_name='matches1')
     target2 = models.ForeignKey('targets.Target', on_delete=models.CASCADE, related_name='matches2')
 
-    def startChat(self):
+    def start_chat(self):
         self.chat_start = timezone.now()
-
-    def endChat(self):
-        self.chat_end = timezone.now()
 
 
 class Message(models.Model):

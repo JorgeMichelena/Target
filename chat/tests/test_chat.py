@@ -106,7 +106,7 @@ class ChatTests(ChannelsLiveServerTestCase):
     def _authenticate_user(self, user):
         self.client.force_login(user)
         cookie = self.client.cookies['sessionid']
-        self.driver.get(self.live_server_url + '/api/v1/')
+        self.driver.get(self.live_server_url + reverse('rest_login'))
         self.driver.add_cookie({'name': 'sessionid', 'value': cookie.value, 'secure': False, 'path': '/'})
         self.driver.refresh()
 

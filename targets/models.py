@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from targets.validators import validate_coordinates
-from django.contrib.gis.db.models.functions import Distance
 
 
 class Topic(models.Model):
@@ -28,10 +27,8 @@ class Target(gis_models.Model):
         radius = self.radius
         location = self.location
         topic = self.topic
-        return Target.objects.annotate(
-                                distance=Distance('location', location),
-                                sum_radius=models.F('radius') + radius
-        ).filter(
-            distance__lte=models.F('sum_radius'),
-            topic_id=topic.pk
+        return Target.objects.filter(
+                                location__distance_lte=(location,
+                                                        models.F('radius') + radius),
+                                topic_id=topic.pk
         ).exclude(user_id=user.id)

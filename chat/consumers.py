@@ -28,7 +28,7 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         if self.match.chat_start is None:
-            self.match.startChat()
+            self.match.start_chat()
         new_message = Message(content=message, chat=self.match, author=self.user)
         new_message.save()
 
