@@ -1,39 +1,26 @@
-from users.factory import UserFactory
-from chat.models import Match
-from targets.factory import TopicFactory, TargetFactory
-from chat.factory import MessageFactory
-import random
+from chat.factory import MessageFactory, MatchFactory
+from random import randint
 from django.test import TestCase
+from django.urls import reverse
 
 
 class PaginatedHistoryTest(TestCase):
     def setUp(self):
         num_messages = 60
-
-        self.user1 = UserFactory()
-        self.user2 = UserFactory()
-        self.user1.save()
-        self.user2.save()
-        self.topic = TopicFactory()
-        self.topic.save()
-        self.target1 = TargetFactory(user=self.user1, topic=self.topic)
-        self.target2 = TargetFactory(user=self.user2, topic=self.topic)
-        self.target1.save()
-        self.target2.save()
-        self.match = Match(target1=self.target1, target2=self.target2)
-        self.match.save()
+        self.match = MatchFactory()
+        self.user1 = self.match.target1.user
+        self.user2 = self.match.target2.user
         self.messages = []
         for i in range(num_messages):
             if i % 2 == 0:
                 self.messages.append(MessageFactory(author=self.user1, chat=self.match))
             else:
                 self.messages.append(MessageFactory(author=self.user2, chat=self.match))
-        for msg in self.messages:
-            msg.save()
+        self.chat_url = reverse('room', kwargs={'match_id': self.match.id})
 
     def test_see_paginated_history_newest_20_messages_by_default(self):
         self.client.force_login(self.user1)
-        response = self.client.get(f'/chat/{self.match.id}/')
+        response = self.client.get(self.chat_url)
         expected_page1 = ''
         for i in range(20):
             expected_page1 += '>>' + self.messages[40+i].author.username + ':\n' + self.messages[40+i].content + '\n\n'
@@ -41,15 +28,15 @@ class PaginatedHistoryTest(TestCase):
 
     def test_see_paginated_history_indicating_page(self):
         self.client.force_login(self.user1)
-        response1 = self.client.get(f'/chat/{self.match.id}/?page=1')
+        response1 = self.client.get(self.chat_url + '?page=1')
         expected_page1 = ''
         for i in range(20):
             expected_page1 += '>>' + self.messages[40+i].author.username + ':\n' + self.messages[40+i].content + '\n\n'
-        response2 = self.client.get(f'/chat/{self.match.id}/?page=2')
+        response2 = self.client.get(self.chat_url + '?page=2')
         expected_page2 = ''
         for i in range(20):
             expected_page2 += '>>' + self.messages[20+i].author.username + ':\n' + self.messages[20+i].content + '\n\n'
-        response3 = self.client.get(f'/chat/{self.match.id}/?page=3')
+        response3 = self.client.get(self.chat_url + '?page=3')
         expected_page3 = ''
         for i in range(20):
             expected_page3 += '>>' + self.messages[i].author.username + ':\n' + self.messages[i].content + '\n\n'
@@ -60,11 +47,11 @@ class PaginatedHistoryTest(TestCase):
 
     def test_see_paginated_history_indicating_pages_out_of_range(self):
         self.client.force_login(self.user1)
-        response1 = self.client.get(f'/chat/{self.match.id}/?page={random.randint(-1000,0)}')
+        response1 = self.client.get(self.chat_url + f'?page={randint(-1000, 0)}')
         expected_page1 = ''
         for i in range(20):
             expected_page1 += '>>' + self.messages[40+i].author.username + ':\n' + self.messages[40+i].content + '\n\n'
-        response2 = self.client.get(f'/chat/{self.match.id}/?page={random.randint(4,1000)}')
+        response2 = self.client.get(self.chat_url + f'?page={randint(4, 1000)}')
         expected_page2 = ''
         for i in range(20):
             expected_page2 += '>>' + self.messages[i].author.username + ':\n' + self.messages[i].content + '\n\n'

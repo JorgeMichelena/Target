@@ -11,6 +11,7 @@ class Match(models.Model):
     def start_chat(self):
         self.chat_start = timezone.now()
 
+
 class Message(models.Model):
     content = models.TextField()
     creation_date = models.DateTimeField(auto_now_add=True)
