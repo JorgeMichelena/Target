@@ -1,4 +1,5 @@
 from targets.models import Topic
+from chat.models import Match
 from api.serializers import TopicSerializer, TargetSerializer
 from rest_framework import viewsets, permissions
 
@@ -16,7 +17,10 @@ class TargetViewSet(viewsets.ModelViewSet):
     serializer_class = TargetSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        target = serializer.save(user=self.request.user)
+        for compatible in target.compatible_targets():
+            match = Match(target1=target, target2=compatible)
+            match.save()
 
     def get_queryset(self):
         return self.request.user.targets

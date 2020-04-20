@@ -21,3 +21,14 @@ class Target(gis_models.Model):
     location = gis_models.PointField(geography=True,
                                      validators=[validate_coordinates])
     creation_date = models.DateField(auto_now_add=True)
+
+    def compatible_targets(self):
+        user = self.user
+        radius = self.radius
+        location = self.location
+        topic = self.topic
+        return Target.objects.filter(
+                                location__distance_lte=(location,
+                                                        models.F('radius') + radius),
+                                topic_id=topic.pk
+        ).exclude(user_id=user.id)
