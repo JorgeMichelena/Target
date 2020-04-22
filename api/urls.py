@@ -5,6 +5,7 @@ from targets.views import TopicViewSet, TargetViewSet
 from chat.views import MatchViewSet
 from rest_framework.routers import DefaultRouter
 
+
 router = DefaultRouter()
 router.register('topics', TopicViewSet, basename='topic')
 router.register('targets', TargetViewSet, basename='target')
@@ -24,5 +25,6 @@ urlpatterns = [
          ),
     path('registration/', include('rest_auth.registration.urls')),
     path('', include('rest_auth.urls')),
+    path('', include('rest_framework.urls', namespace='rest_framework')),
     path('login/', LoginView.as_view(), name='account_email_verification_sent'),
 ]

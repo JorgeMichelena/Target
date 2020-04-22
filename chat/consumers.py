@@ -5,6 +5,8 @@ from chat.models import Message, Match
 
 
 class ChatConsumer(WebsocketConsumer):
+    connected = set()
+
     def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.user = self.scope['user']
@@ -15,7 +17,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-
+        self.connected.add(self.user.id)
         self.accept()
 
     def disconnect(self, close_code):
@@ -23,6 +25,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        self.connected.discard(self.user.id)
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)

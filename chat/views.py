@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+from django.core.paginator import Paginator
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -25,11 +26,20 @@ class ChatRoom(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         match = get_object_or_404(Match, id=kwargs['match_id'])
-        messages = match.chatlog.all().order_by('creation_date').select_related('author')
+        messages = match.chatlog.all().order_by('-creation_date').select_related('author')
+        paginator = Paginator(messages, 20)
+        page = 1
+        if 'page' in self.request.GET and self.request.GET['page'].isdigit():
+            if int(self.request.GET['page']) > paginator.num_pages:
+                page = paginator.num_pages
+            else:
+                page = self.request.GET['page']
         chat = ''
-        for msg in messages:
-            chat += '>>' + msg.author.username + ':\n' + msg.content + '\n\n'
+        chatlog = paginator.page(page).object_list
+        for msg in chatlog:
+            chat = '>>' + msg.author.username + ':\n' + msg.content + '\n\n' + chat
         context['chat'] = chat
+        context['num_page'] = page
         return context
 
     def dispatch(self, request, *args, **kwargs):
