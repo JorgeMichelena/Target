@@ -8,6 +8,8 @@ from targets.factory import TopicFactory, TargetFactory
 from users.models import User
 from time import sleep
 import factory
+from users.factory import UserFactory
+from chat.factory import MatchFactory
 
 
 class UnreadMessagesTests(ChannelsLiveServerTestCase):
@@ -16,36 +18,10 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
     def setUp(self):
         super().setUpClass()
         self.client = Client()
-        # define data to make users and then register them
-        data1 = {'username': 'usuario1',
-                 'email': 'usuario1@example.com',
-                 'password1': 'test1234password',
-                 'password2': 'test1234password',
-                 'gender': User.MALE
-                 }
-        data2 = {'username': 'usuario2',
-                 'email': 'usuario2@example.com',
-                 'password1': 'test1234password',
-                 'password2': 'test1234password',
-                 'gender': User.MALE
-                 }
-        self.client.post('/api/v1/registration/', data1)
-        self.client.post('/api/v1/registration/', data2)
-
-        # Save models in database
-        self.users = User.objects.all()
-        self.user1 = self.users[0]
-        self.user2 = self.users[1]
-        self.topic = TopicFactory()
-        self.target1 = TargetFactory(user=self.user1, topic=self.topic)
-        self.target2 = TargetFactory(user=self.user2, topic=self.topic, location=self.target1.location)
-        self.match1 = Match(target1=self.target1, target2=self.target2)
-        self.topic.save()
-        self.user1.save()
-        self.user2.save()
-        self.target1.save()
-        self.target2.save()
-        self.match1.save()
+        self.match = MatchFactory()
+        self.user1 = self.match.target1.user
+        self.user2 = self.match.target2.user
+        self.user3 = UserFactory()
 
         self.text1 = factory.Faker('word').generate()
         self.text2 = factory.Faker('word').generate()
@@ -60,7 +36,7 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
 
     def test_see_unread_messages_before_entering_chatroom(self):
         self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match1.id)
+        self._enter_chat_room(self.match.id)
 
         self._switch_to_window(0)
         self._post_message(self.text1)
@@ -77,14 +53,14 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
             'Message was not received by window 1 from window 1')
 
         self.client.logout()
-        self.client.login(username=self.user2.username, password='test1234password')
-        response = self.client.get(f'/api/v1/matches/{self.match1.id}/')
+        self.client.force_login(self.user2)
+        response = self.client.get(f'/api/v1/matches/{self.match.id}/')
         self.assertEqual(response.json()['unread_messages'], 3)
         self.assertEqual(response.json()['last_message'], self.text3)
 
     def test_see_unread_messages_after_entering_chatroom(self):
         self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match1.id)
+        self._enter_chat_room(self.match.id)
 
         self._switch_to_window(0)
         self._post_message(self.text1)
@@ -102,16 +78,14 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
 
         self.client.logout()
         self._authenticate_user(self.user2)
-        self._enter_chat_room(self.match1.id)
-        # Need a little delay, otherwise I get a response before messages can update their date_seen field
-        sleep(0.1)
-        response = self.client.get(f'/api/v1/matches/{self.match1.id}/')
+        self._enter_chat_room(self.match.id)
+        response = self.client.get(f'/api/v1/matches/{self.match.id}/')
         self.assertEqual(response.json()['unread_messages'], 0)
         self.assertEqual(response.json()['last_message'], '')
 
     def test_number_of_unread_messages_depends_of_the_user(self):
         self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match1.id)
+        self._enter_chat_room(self.match.id)
 
         self._switch_to_window(0)
         self._post_message(self.text1)
@@ -127,11 +101,11 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1')
 
-        response_user1 = self.client.get(f'/api/v1/matches/{self.match1.id}/')
+        response_user1 = self.client.get(f'/api/v1/matches/{self.match.id}/')
 
         self.client.logout()
-        self.client.login(username=self.user2.username, password='test1234password')
-        response_user2 = self.client.get(f'/api/v1/matches/{self.match1.id}/')
+        self.client.force_login(self.user2)
+        response_user2 = self.client.get(f'/api/v1/matches/{self.match.id}/')
 
         self.assertEqual(response_user1.json()['unread_messages'], 0)
         self.assertEqual(response_user1.json()['last_message'], self.text3)
@@ -160,7 +134,7 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
         ActionChains(self.driver).send_keys(message + '\n').perform()
 
     def _authenticate_user(self, user):
-        self.client.login(username=user.username, password='test1234password')
+        self.client.force_login(user)
         cookie = self.client.cookies['sessionid']
         self.driver.get(self.live_server_url + '/api/v1/')
         self.driver.add_cookie({'name': 'sessionid', 'value': cookie.value, 'secure': False, 'path': '/'})

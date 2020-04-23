@@ -7,9 +7,19 @@ class Match(models.Model):
     chat_start = models.DateTimeField(null=True)
     target1 = models.ForeignKey('targets.Target', on_delete=models.CASCADE, related_name='matches1')
     target2 = models.ForeignKey('targets.Target', on_delete=models.CASCADE, related_name='matches2')
+    user_1_online_count = models.PositiveIntegerField(default=0)
+    user_2_online_count = models.PositiveIntegerField(default=0)
 
     def start_chat(self):
         self.chat_start = timezone.now()
+    
+    def mark_messages_as_seen(self, user_id):
+        (self.chatlog
+            .filter(date_seen__isnull=True)
+            .order_by('id')
+            .select_related('author')
+            .exclude(author__id=user_id)
+        ).update(date_seen=timezone.now())
 
 
 class Message(models.Model):
@@ -18,3 +28,6 @@ class Message(models.Model):
     date_seen = models.DateTimeField(null=True)
     chat = models.ForeignKey('Match', on_delete=models.CASCADE, related_name='chatlog')
     author = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='messages')
+
+    def seen(self):
+        self.date_seen = timezone.now()

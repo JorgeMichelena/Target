@@ -2,32 +2,43 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from chat.models import Message, Match
-
+from django.db.models import F
 
 
 class ChatConsumer(WebsocketConsumer):
-    connected = set()
 
     def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.user = self.scope['user']
-        self.match = Match.objects.get(pk=self.match_id)
+        self.match = Match.objects.get(pk=self.match_id).select_related('target1', 'target2')
         self.room_group_name = f'chat_{self.match_id}'
+        
+        self.num_user = 1
+        if self.match.target2.user_id == self.user.id:
+            self.num_user = 2
+            self.match.user_2_online_count = F('user_2_online_count') + 1
+        else:
+            self.match.user_1_online_count = F('user_1_online_count') + 1
+        self.match.save()
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
         )
-        self.connected.add(self.user.id)
-        seeMessages(self.match_id, self.user.id)
+        self.match.mark_messages_as_seen(self.user.id)
         self.accept()
 
     def disconnect(self, close_code):
+        if self.match.target2.user_id
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
         )
-        self.connected.discard(self.user.id)
+        if self.num_user == 2:
+            self.match.user_2_online_count = F('user_2_online_count') - 1
+        else:
+            self.match.user_1_online_count = F('user_1_online_count') - 1
+        self.match.save()
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -54,16 +65,3 @@ class ChatConsumer(WebsocketConsumer):
             'message': message,
             'author': author,
         }))
-
-
-def seeMessages(match_id, user_id):
-    match = Match.objects.get(id=match_id)
-    messages = (match.chatlog
-                     .filter(date_seen__isnull=True)
-                     .order_by('id')
-                     .select_related('author')
-                     .exclude(author__id=user_id)
-                )
-    for msg in messages:
-        msg.seen()
-        msg.save()

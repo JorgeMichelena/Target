@@ -53,7 +53,7 @@ class MatchSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     class Meta:
         model = Match
-        fields = ['pk', 'date_match', 'unread_messages', 'last_message', 'target1', 'target2']
+        fields = ['pk', 'creation_date', 'unread_messages', 'last_message', 'target1', 'target2']
 
     def get_unread_messages(self, instance):
         user_id = self.context['request'].user.id
