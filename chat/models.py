@@ -15,7 +15,6 @@ class Match(models.Model):
         (self.chatlog
             .filter(date_seen__isnull=True)
             .order_by('id')
-            .select_related('author')
             .exclude(author__id=user_id)
          ).update(date_seen=timezone.now())
 

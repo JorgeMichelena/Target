@@ -62,6 +62,7 @@ class MatchSerializer(serializers.ModelSerializer):
 
     def get_last_message(self, instance):
         last_msg = ''
-        if instance.chatlog.filter(date_seen__isnull=True).count() != 0:
-            last_msg = instance.chatlog.filter(date_seen__isnull=True).order_by('id').reverse()[0].content
+        instance_queryset = instance.chatlog.filter(date_seen__isnull=True)
+        if instance_queryset:
+            last_msg = instance_queryset.order_by('-id')[0].content
         return last_msg
