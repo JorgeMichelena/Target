@@ -5,19 +5,25 @@ from chat.models import Message, Match
 
 
 class ChatConsumer(WebsocketConsumer):
-    connected = set()
+    connected = {}
 
     def connect(self):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.user = self.scope['user']
-        self.match = Match.objects.get(pk=self.match_id)
+        self.match = Match.objects.select_related('target1', 'target2').get(pk=self.match_id)
         self.room_group_name = f'chat_{self.match_id}'
+
+        self.partner_id = self.match.target1.user_id
+        if self.user.id == self.partner_id:
+            self.partner_id = self.match.target2.user_id
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
         )
-        self.connected.add(self.user.id)
+        self.match.mark_messages_as_seen(self.user.id)
+        connections = self.connected.setdefault(self.user.id, 0)
+        self.connected[self.user.id] = connections + 1
         self.accept()
 
     def disconnect(self, close_code):
@@ -25,7 +31,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        self.connected.discard(self.user.id)
+        self.connected[self.user.id] = self.connected[self.user.id] - 1
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -33,8 +39,9 @@ class ChatConsumer(WebsocketConsumer):
         if self.match.chat_start is None:
             self.match.start_chat()
         new_message = Message(content=message, chat=self.match, author=self.user)
+        if self.partner_id in self.connected and self.connected[self.partner_id] > 0:
+            new_message.seen()
         new_message.save()
-
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {

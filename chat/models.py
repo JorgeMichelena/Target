@@ -11,6 +11,13 @@ class Match(models.Model):
     def start_chat(self):
         self.chat_start = timezone.now()
 
+    def mark_messages_as_seen(self, user_id):
+        (self.chatlog
+            .filter(date_seen__isnull=True)
+            .order_by('id')
+            .exclude(author__id=user_id)
+         ).update(date_seen=timezone.now())
+
 
 class Message(models.Model):
     content = models.TextField()
@@ -18,3 +25,6 @@ class Message(models.Model):
     date_seen = models.DateTimeField(null=True)
     chat = models.ForeignKey('Match', on_delete=models.CASCADE, related_name='chatlog')
     author = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='messages')
+
+    def seen(self):
+        self.date_seen = timezone.now()
