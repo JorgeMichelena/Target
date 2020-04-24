@@ -40,8 +40,8 @@ class ChatRoom(TemplateView):
             chat = '>>' + msg.author.username + ':\n' + msg.content + '\n\n' + chat
         context['chat'] = chat
         context['num_page'] = page
+        match.mark_messages_as_seen(self.request.user.id)
         return context
-
 
     def dispatch(self, request, *args, **kwargs):
         user = self.request.user

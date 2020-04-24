@@ -51,6 +51,7 @@ class MatchSerializer(serializers.ModelSerializer):
     target2 = TargetSerializer()
     unread_messages = serializers.SerializerMethodField()
     last_message = serializers.SerializerMethodField()
+
     class Meta:
         model = Match
         fields = ['pk', 'creation_date', 'unread_messages', 'last_message', 'target1', 'target2']

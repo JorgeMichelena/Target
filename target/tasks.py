@@ -11,6 +11,7 @@ app = Celery('target')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
+
 @task()
 def delete_one_week_old_targets():
     delete_date = datetime.date.today() - datetime.timedelta(days=7)
