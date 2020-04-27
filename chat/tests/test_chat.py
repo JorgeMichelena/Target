@@ -1,6 +1,5 @@
 from channels.testing import ChannelsLiveServerTestCase
 from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from django.test import Client
 from chat.factory import MatchFactory
@@ -52,7 +51,6 @@ class ChatTests(ChannelsLiveServerTestCase):
         self._enter_chat_room(self.match.id)
         self._post_message('hello')
         self.client.logout()
-
         self._authenticate_user(self.user2)
         self._enter_chat_room(self.match.id)
         WebDriverWait(self.driver, 2).until(
@@ -60,10 +58,8 @@ class ChatTests(ChannelsLiveServerTestCase):
             'hello' in self._chat_log_value(),
             'Message was not received by window 2 from window 1'
                                             )
-
         self._post_message('world')
         self.client.logout()
-
         self._authenticate_user(self.user1)
         self._enter_chat_room(self.match.id)
         WebDriverWait(self.driver, 2).until(
@@ -101,7 +97,10 @@ class ChatTests(ChannelsLiveServerTestCase):
         self.driver.switch_to_window(self.driver.window_handles[window_index])
 
     def _post_message(self, message):
-        ActionChains(self.driver).send_keys(message + '\n').perform()
+        input_text = self.driver.find_element_by_id('chat-message-input')
+        submit = self.driver.find_element_by_id('chat-message-submit')
+        input_text.send_keys(message)
+        submit.click()
 
     def _authenticate_user(self, user):
         self.client.force_login(user)
