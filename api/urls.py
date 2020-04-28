@@ -4,6 +4,7 @@ from rest_auth.views import LoginView
 from targets.views import TopicViewSet, TargetViewSet
 from chat.views import MatchViewSet
 from rest_framework.routers import DefaultRouter
+from users.views import MailAdmins
 
 
 router = DefaultRouter()
@@ -27,4 +28,5 @@ urlpatterns = [
     path('', include('rest_auth.urls')),
     path('', include('rest_framework.urls', namespace='rest_framework')),
     path('login/', LoginView.as_view(), name='account_email_verification_sent'),
+    path('contact/', MailAdmins.as_view(), name='mail_admins'),
 ]

@@ -66,3 +66,8 @@ class MatchSerializer(serializers.ModelSerializer):
         if instance_queryset:
             last_msg = instance_queryset.order_by('-id')[0].content
         return last_msg
+
+
+class MailSerializer(serializers.Serializer):
+    subject = serializers.CharField(allow_blank=False, required=True)
+    message = serializers.CharField(allow_blank=False, required=True, style={'base_template': 'textarea.html'})
