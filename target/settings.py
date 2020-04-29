@@ -82,12 +82,12 @@ ROOT_URLCONF = 'target.urls'
 
 # E-mail
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
+ENV_ROLE = os.getenv('ENV_ROLE')
+if ENV_ROLE == 'CI':
+    from .mail_settings.ci_settings import *
+else:
+    from .mail_settings.local_settings import *
+
 
 TEMPLATES = [
     {

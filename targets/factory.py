@@ -17,7 +17,7 @@ class DjangoGeoPointProvider(BaseProvider):
 
 
 class TopicFactory(Factory):
-    name = factory.Faker('word')
+    name = factory.Sequence(lambda n: 'Topic %d' % n)
 
     class Meta:
         model = Topic
@@ -26,7 +26,7 @@ class TopicFactory(Factory):
 class TargetFactory(Factory):
     factory.Faker.add_provider(DjangoGeoPointProvider)
 
-    title = factory.Faker('word')
+    title = factory.Sequence(lambda n: 'Target %d' % n)
     radius = random.randint(0, 1000)
     location = factory.Faker('geo_point')
     topic = factory.SubFactory(TopicFactory)
