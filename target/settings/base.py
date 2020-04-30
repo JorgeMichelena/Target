@@ -80,15 +80,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'target.urls'
 
-# E-mail
-
-ENV_ROLE = os.getenv('ENV_ROLE')
-if ENV_ROLE == 'CI':
-    from .mail_settings.ci_settings import *
-else:
-    from .mail_settings.local_settings import *
-
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
