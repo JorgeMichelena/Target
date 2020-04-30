@@ -36,4 +36,4 @@ jobs:
             - "/"
       - run: flake8
       - run: coverage run --source=. manage.py test
-      - run: coverage report
+      - run: coverage report --fail-under=90
