@@ -34,13 +34,13 @@ class ChatTests(ChannelsLiveServerTestCase):
 
         self._switch_to_window(0)
         self._post_message('hello')
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 4).until(
             lambda _:
             'hello' in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._switch_to_window(1)
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 4).until(
             lambda _:
             'hello' in self._chat_log_value(),
             'Message was not received by window 2 from window 1'
@@ -53,7 +53,7 @@ class ChatTests(ChannelsLiveServerTestCase):
         self.client.logout()
         self._authenticate_user(self.user2)
         self._enter_chat_room(self.match.id)
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 4).until(
             lambda _:
             'hello' in self._chat_log_value(),
             'Message was not received by window 2 from window 1'
@@ -62,7 +62,7 @@ class ChatTests(ChannelsLiveServerTestCase):
         self.client.logout()
         self._authenticate_user(self.user1)
         self._enter_chat_room(self.match.id)
-        WebDriverWait(self.driver, 3).until(
+        WebDriverWait(self.driver, 4).until(
             lambda _:
             'world' in self._chat_log_value(),
             'Message was not received by window 1 from window 2'
