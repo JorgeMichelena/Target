@@ -35,5 +35,6 @@ jobs:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
             - "/"
-      - run: python3 manage.py test
       - run: flake8
+      - run: coverage run --source=. manage.py test
+      - run: coverage report
