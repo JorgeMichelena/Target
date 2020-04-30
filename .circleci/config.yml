@@ -6,7 +6,6 @@ jobs:
       - image: circleci/python:3.7.6-stretch-browsers
         environment:
           CIRCLECI: true
-          SECRET_KEY: '!f7k)2j8c!@o!ljx7deoaylhvv)1b$n(np-9l-x7_!4h#*ux*8'
           USER: user
           DB_NAME: target
           PORT: 5432
