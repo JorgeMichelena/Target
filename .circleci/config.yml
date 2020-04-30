@@ -14,7 +14,7 @@ jobs:
           BROKER_URL: redis://localhost:6379
           REDIS_HOST: localhost
           REDIS_PORT: 6379
-          ENV_ROLE: CI
+          ENV_ROLE: ci
           EMAIL_PORT: 587
           PIPENV_VENV_IN_PROJECT: true
       - image: mdillon/postgis
@@ -37,4 +37,4 @@ jobs:
             - "/"
       - run: flake8
       - run: coverage run --source=. manage.py test
-      - run: coverage report
+      - run: coverage report --fail-under=90
