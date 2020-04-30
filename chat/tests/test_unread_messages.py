@@ -35,19 +35,19 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
 
         self._switch_to_window(0)
         self._post_message(self.text1)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text1 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._post_message(self.text2)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text2 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._post_message(self.text3)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
@@ -65,19 +65,19 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
 
         self._switch_to_window(0)
         self._post_message(self.text1)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text1 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._post_message(self.text2)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text2 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._post_message(self.text3)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
@@ -95,19 +95,19 @@ class UnreadMessagesTests(ChannelsLiveServerTestCase):
 
         self._switch_to_window(0)
         self._post_message(self.text1)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text1 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._post_message(self.text2)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text2 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
                                             )
         self._post_message(self.text3)
-        WebDriverWait(self.driver, 2).until(
+        WebDriverWait(self.driver, 3).until(
             lambda _:
             self.text3 in self._chat_log_value(),
             'Message was not received by window 1 from window 1'
