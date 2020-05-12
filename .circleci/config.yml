@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/target/
     docker:
-      - image: circleci/python:3.7.6-stretch-browsers
+      - image: circleci/python:3.7.6
         environment:
           CIRCLECI: true
           USER: user
@@ -34,6 +34,6 @@ jobs:
           paths:
             - "/"
       - run: flake8
-      - run: coverage run --source=. manage.py test --exclude-tag=pytest
-      - run: coverage run pytest
+      - run: coverage run -a --source=. manage.py test --exclude-tag=pytest
+      - run: coverage run -a -m pytest
       - run: coverage report --fail-under=90
