@@ -14,7 +14,6 @@ jobs:
           REDIS_HOST: localhost
           REDIS_PORT: 6379
           ENV_ROLE: ci
-          EMAIL_PORT: 587
           PIPENV_VENV_IN_PROJECT: true
       - image: mdillon/postgis
         environment:
@@ -35,5 +34,6 @@ jobs:
           paths:
             - "/"
       - run: flake8
-      - run: coverage run --source=. manage.py test
+      - run: coverage run --source=. manage.py test --exclude-tag=pytest
+      - run: coverage run pytest
       - run: coverage report --fail-under=90

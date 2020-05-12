@@ -1,113 +1,99 @@
-from channels.testing import ChannelsLiveServerTestCase
-from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
 from django.test import Client
-from chat.factory import MatchFactory
 from users.factory import UserFactory
-from rest_framework import status
-from django.urls import reverse
+from chat.factory import MatchFactory
+from channels.testing import WebsocketCommunicator
+from target.routing import application
+import pytest
+from channels.db import database_sync_to_async
+from asgiref.sync import sync_to_async
+import json
+import factory
+from django.test import tag
 
 
-class ChatTests(ChannelsLiveServerTestCase):
-    serve_static = True
+def auth_communicator(client, match_id):
+    return WebsocketCommunicator(
+            application=application,
+            path=f'/ws/chat/{match_id}/',
+            headers=[(
+                b'cookie',
+                f'sessionid={client.cookies["sessionid"].value}'.encode('ascii')
+            )]
+        )
 
-    def setUp(self):
-        super().setUp()
+
+@tag('pytest')
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+class TestChat:
+    def setup_method(self):
         self.client = Client()
         self.match = MatchFactory()
-        self.user1 = self.match.target1.user
-        self.user2 = self.match.target2.user
-        self.user3 = UserFactory()
 
-        # The directory in wich chromedriver's binary is in must be added to $PATH
-        self.driver = webdriver.Chrome()
+    async def test_authorized_user_can_connect(self):
+        user = self.match.target1.user
+        await sync_to_async(self.client.force_login)(user=user)
+        communicator = auth_communicator(self.client, self.match.id)
+        connected, _ = await communicator.connect()
+        assert connected is True
+        await communicator.disconnect()
 
-    def tearDown(self):
-        self.driver.quit()
-        super().tearDown()
+    async def test_send_and_receive_message(self):
+        user = self.match.target1.user
+        await sync_to_async(self.client.force_login)(user=user)
+        communicator = auth_communicator(self.client, self.match.id)
+        await communicator.connect()
+        content = factory.Faker('text').generate()
+        message = json.dumps({"message": content})
+        await communicator.send_to(text_data=message)
+        received = await communicator.receive_from()
+        response = json.loads(received)
+        assert response['author'] == user.username
+        assert response['message'] == content
+        await communicator.disconnect()
 
-    def test_chat_message_posted_then_seen_in_different_windows_same_user_logged(self):
-        self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match.id)
-        self._open_new_window()
-        self._enter_chat_room(self.match.id)
+    async def test_message_is_received_by_other_user(self):
+        user_1 = self.match.target1.user
+        user_2 = self.match.target2.user
+        await sync_to_async(self.client.force_login)(user=user_1)
+        communicator_1 = auth_communicator(self.client, self.match.id)
+        await communicator_1.connect()
+        await sync_to_async(self.client.force_login)(user=user_2)
+        communicator_2 = auth_communicator(self.client, self.match.id)
+        await communicator_2.connect()
+        content_1 = factory.Faker('text').generate()
+        message_1 = json.dumps({"message": content_1})
+        await communicator_1.send_to(text_data=message_1)
+        received_2 = await communicator_2.receive_from()
+        response_2 = json.loads(received_2)
+        content_2 = factory.Faker('text').generate()
+        message_2 = json.dumps({"message": content_2})
+        await communicator_2.send_to(text_data=message_2)
+        # First call to receive_from() returns first message received by group,
+        # have to call it again to get the newest message.
+        await communicator_1.receive_from()
+        received_1 = await communicator_1.receive_from()
+        response_1 = json.loads(received_1)
+        assert response_2['author'] == user_1.username
+        assert response_2['message'] == content_1
+        assert response_1['author'] == user_2.username
+        assert response_1['message'] == content_2
+        await communicator_1.disconnect()
+        await communicator_2.disconnect()
 
-        self._switch_to_window(0)
-        self._post_message('hello')
-        WebDriverWait(self.driver, 4).until(
-            lambda _:
-            'hello' in self._chat_log_value(),
-            'Message was not received by window 1 from window 1'
-                                            )
-        self._switch_to_window(1)
-        WebDriverWait(self.driver, 4).until(
-            lambda _:
-            'hello' in self._chat_log_value(),
-            'Message was not received by window 2 from window 1'
-                                            )
+    async def test_user_not_in_the_match_cant_connect(self):
+        user = await database_sync_to_async(UserFactory)()
+        await sync_to_async(self.client.force_login)(user=user)
+        communicator = auth_communicator(self.client, self.match.id)
+        connected, _ = await communicator.connect()
+        assert connected is False
+        await communicator.disconnect()
 
-    def test_when_chat_message_posted_then_seen_by_the_other_user(self):
-        self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match.id)
-        self._post_message('hello')
-        self.client.logout()
-        self._authenticate_user(self.user2)
-        self._enter_chat_room(self.match.id)
-        WebDriverWait(self.driver, 10).until(
-            lambda _:
-            'hello' in self._chat_log_value(),
-            'Message was not received by window 2 from window 1'
-                                            )
-        self._post_message('world')
-        self.client.logout()
-        self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match.id)
-        WebDriverWait(self.driver, 10).until(
-            lambda _:
-            'world' in self._chat_log_value(),
-            'Message was not received by window 1 from window 2'
-                                            )
-
-    def test_when_chat_message_posted_cannot_be_seen_by_users_not_in_the_match(self):
-        self._authenticate_user(self.user1)
-        self._enter_chat_room(self.match.id)
-        self._post_message('hello')
-        self.client.logout()
-        self.client.force_login(self.user3)
-        chat_suffix = reverse('room', kwargs={'match_id': self.match.id})
-        response = self.client.get(self.live_server_url + chat_suffix)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    # Methods used in testing
-    def _enter_chat_room(self, match_id):
-        self.driver.get(self.live_server_url + reverse('room', kwargs={'match_id': match_id}))
-
-    def _open_new_window(self):
-        self.driver.execute_script('window.open("about:blank", "_blank");')
-        self.driver.switch_to_window(self.driver.window_handles[-1])
-
-    def _close_all_new_windows(self):
-        while len(self.driver.window_handles) > 1:
-            self.driver.switch_to_window(self.driver.window_handles[-1])
-            self.driver.execute_script('window.close();')
-        if len(self.driver.window_handles) == 1:
-            self.driver.switch_to_window(self.driver.window_handles[0])
-
-    def _switch_to_window(self, window_index):
-        self.driver.switch_to_window(self.driver.window_handles[window_index])
-
-    def _post_message(self, message):
-        input_text = self.driver.find_element_by_id('chat-message-input')
-        submit = self.driver.find_element_by_id('chat-message-submit')
-        input_text.send_keys(message)
-        submit.click()
-
-    def _authenticate_user(self, user):
-        self.client.force_login(user)
-        cookie = self.client.cookies['sessionid']
-        self.driver.get(self.live_server_url + reverse('rest_login'))
-        self.driver.add_cookie({'name': 'sessionid', 'value': cookie.value, 'secure': False, 'path': '/'})
-        self.driver.refresh()
-
-    def _chat_log_value(self):
-        return self.driver.find_element_by_css_selector('#chat-log').get_property('value')
+    async def test_anonymous_user_cant_connect(self):
+        communicator = WebsocketCommunicator(
+            application=application,
+            path=f'/ws/chat/{self.match.id}/'
+        )
+        connected, _ = await communicator.connect()
+        assert connected is False
+        await communicator.disconnect()
