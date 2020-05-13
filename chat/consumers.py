@@ -11,8 +11,9 @@ class ChatConsumer(WebsocketConsumer):
         self.match_id = self.scope['url_route']['kwargs']['match_id']
         self.user = self.scope['user']
         self.match = Match.objects.select_related('target1', 'target2').get(pk=self.match_id)
+        if not (self.match.target1.user == self.user or self.match.target2.user == self.user):
+            self.close()
         self.room_group_name = f'chat_{self.match_id}'
-
         self.partner_id = self.match.target1.user_id
         if self.user.id == self.partner_id:
             self.partner_id = self.match.target2.user_id
