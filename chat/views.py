@@ -6,6 +6,11 @@ from django.views.generic.base import TemplateView
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from users.models import User, OnesignalPlayerId
+from django.http import HttpResponse
+from django.conf import settings
 
 
 class MatchViewSet(viewsets.ReadOnlyModelViewSet):
@@ -49,3 +54,35 @@ class ChatRoom(TemplateView):
         if not (match.target1.user == user or match.target2.user == user):
             raise Http404
         return super(ChatRoom, self).dispatch(request, *args, **kwargs)
+
+
+class NotifView(TemplateView):
+    template_name = 'chat/notifications-subscription.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ONESIGNAL_APP_ID'] = settings.ONESIGNAL_APP_ID
+        context['SAFARI_WEB_ID'] = settings.SAFARI_WEB_ID
+        return context
+
+
+@csrf_exempt
+@login_required
+def onesignal_register(request):
+    user = User.objects.get(pk=request.user.id)
+    player_id = request.POST.get('playerId')
+    if player_id:
+        pid = OnesignalPlayerId(player_id=player_id, user=user)
+        pid.save()
+        request.session['session_player_id'] = player_id
+        return HttpResponse('Done')
+
+
+@csrf_exempt
+@login_required
+def onesignal_unregister(request):
+    user_id = request.user.id
+    player_id = request.POST.get('playerId')
+    ids_to_delete = User.objects.get(pk=user_id).player_ids.filter(player_id=player_id)
+    ids_to_delete.delete()
+    return HttpResponse('Done')

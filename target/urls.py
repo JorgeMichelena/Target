@@ -16,9 +16,27 @@ Including another URLconf
 
 from django.contrib.gis import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
+from chat.views import onesignal_register
+from chat.views import onesignal_unregister
+
 
 urlpatterns = [
     path('chat/', include('chat.urls')),
     path('api/v1/', include('api.urls')),
     path('admin/', admin.site.urls),
+    path('manifest.json',
+         TemplateView.as_view(template_name='onesignal/manifest.json',
+                              content_type='application/json')
+         ),
+    path('OneSignalSDKWorker.js',
+         TemplateView.as_view(template_name='onesignal/OneSignalSDKWorker.js',
+                              content_type='application/x-javascript')
+         ),
+    path('OneSignalSDKWorker.js',
+         TemplateView.as_view(template_name='onesignal/OneSignalSDKWorker.js',
+                              content_type='application/x-javascript')
+         ),
+    path('onesignal-register/', onesignal_register, name='onesignal_register'),
+    path('onesignal-unregister/', onesignal_unregister, name='onesignal_unregister'),
 ]

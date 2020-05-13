@@ -15,3 +15,8 @@ class User(AbstractUser):
         max_length=1,
         default='N',
     )
+
+
+class OnesignalPlayerId(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='player_ids')
+    player_id = models.CharField(max_length=40, default='')

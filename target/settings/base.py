@@ -204,3 +204,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# Onesignal Keys
+
+ONESIGNAL_APP_ID = os.getenv('ONESIGNAL_APP_ID')
+SAFARI_WEB_ID = os.getenv('SAFARI_WEB_ID')
