@@ -13,5 +13,4 @@ def send_notification(typenot, match_id, message, player_ids):
                "contents": content,
                "heading": heading,
                "url": url}
-    print('Inside method')
     requests.post("https://onesignal.com/api/v1/notifications", headers=header, data=json.dumps(payload))
