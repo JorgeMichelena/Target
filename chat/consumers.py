@@ -2,6 +2,8 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from chat.models import Message, Match
+from users.models import User
+from chat.push_notifications import send_notification
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -42,6 +44,13 @@ class ChatConsumer(WebsocketConsumer):
         new_message = Message(content=message, chat=self.match, author=self.user)
         if self.partner_id in self.connected and self.connected[self.partner_id] > 0:
             new_message.seen()
+        else:
+            player_ids = User.objects.get(pk=self.partner_id).player_ids.all()
+            if player_ids:
+                ids_list = [pid.player_id for pid in player_ids]
+                content = message[0:15] + '...'
+                msg = f'Message from {self.user.username}: {content}'
+                send_notification('Message', self.match_id, msg, ids_list)
         new_message.save()
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
