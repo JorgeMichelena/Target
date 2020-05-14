@@ -37,7 +37,7 @@ class TestMessagesNotifications:
         onesignal.save()
 
     async def test_send_notification_when_user_is_offline(self, mocker):
-        send_notification_mock = await sync_to_async(mocker.patch)('chat.consumers.send_notification')
+        send_notification_mock = mocker.patch('chat.consumers.send_notification')
         await sync_to_async(self.client.force_login)(user=self.user1)
         communicator = auth_communicator(self.client, self.match.id)
         await communicator.connect()
@@ -47,7 +47,7 @@ class TestMessagesNotifications:
         assert send_notification_mock.called
 
     async def test_dont_send_notification_when_user_is_online(self, mocker):
-        send_notification_mock = await sync_to_async(mocker.patch)('chat.consumers.send_notification')
+        send_notification_mock = mocker.patch('chat.consumers.send_notification')
         await sync_to_async(self.client.force_login)(user=self.user1)
         communicator1 = auth_communicator(self.client, self.match.id)
         await sync_to_async(self.client.force_login)(user=self.user2)
@@ -55,13 +55,13 @@ class TestMessagesNotifications:
         await communicator1.connect()
         await communicator2.connect()
         await communicator1.send_to(text_data=self.message)
-        assert not send_notification_mock.called
-        await communicator1.disconnect()
         await communicator2.disconnect()
+        await communicator1.disconnect()
+        assert not send_notification_mock.called
 
     async def test_send_a_notification_for_each_message(self, mocker):
         num_messages = random.randint(1, 20)
-        send_notification_mock = await sync_to_async(mocker.patch)('chat.consumers.send_notification')
+        send_notification_mock = mocker.patch('chat.consumers.send_notification')
         await sync_to_async(self.client.force_login)(user=self.user1)
         communicator = auth_communicator(self.client, self.match.id)
         await communicator.connect()
