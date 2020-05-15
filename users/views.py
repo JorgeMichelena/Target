@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from .models import User
 from api.serializers import MailSerializer
 from rest_framework import status
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
+from rest_auth.registration.views import SocialLoginView
 
 
 class MailAdmins(APIView):
@@ -31,3 +33,7 @@ class MailAdmins(APIView):
                       )
             return Response('Message sent to admins')
         return Response(data_mail.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter

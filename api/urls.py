@@ -4,7 +4,7 @@ from rest_auth.views import LoginView
 from targets.views import TopicViewSet, TargetViewSet
 from chat.views import MatchViewSet
 from rest_framework.routers import DefaultRouter
-from users.views import MailAdmins
+from users.views import MailAdmins, FacebookLogin
 
 
 router = DefaultRouter()
@@ -14,6 +14,7 @@ router.register('matches', MatchViewSet, basename='match')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('accounts/', include('allauth.urls'), name='socialaccount_signup'),
     path('account/', include('django.contrib.auth.urls')),
     path('login/', LoginView.as_view(), name='account_email_verification_sent'),
     path('registration/account-confirm-email/<str:key>/login/',
@@ -29,4 +30,5 @@ urlpatterns = [
     path('', include('rest_framework.urls', namespace='rest_framework')),
     path('login/', LoginView.as_view(), name='account_email_verification_sent'),
     path('contact/', MailAdmins.as_view(), name='mail_admins'),
+    path('facebook-login/', FacebookLogin.as_view(), name='fb_login'),
 ]
