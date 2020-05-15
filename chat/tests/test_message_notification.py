@@ -55,8 +55,8 @@ class TestMessagesNotifications:
         await communicator1.connect()
         await communicator2.connect()
         await communicator1.send_to(text_data=self.message)
-        assert not send_notification_mock.called
         await communicator2.disconnect()
+        assert not send_notification_mock.called
         await communicator1.disconnect()
 
     async def test_send_a_notification_for_each_message(self, mocker):
