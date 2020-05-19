@@ -7,7 +7,8 @@ from django.conf import settings
 class Topic(models.Model):
     name = models.CharField(max_length=30, unique=True)
     picture = models.ImageField(default=settings.DEFAULT_TOPIC_PICTURE,
-                                upload_to=settings.TOPIC_PICTURE_FOLDER)
+                                upload_to=settings.TOPIC_PICTURE_FOLDER,
+                                )
 
     def __str__(self):
         return self.name

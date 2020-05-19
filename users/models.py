@@ -17,7 +17,8 @@ class User(AbstractUser):
         default='N',
     )
     profile_picture = models.ImageField(default=settings.DEFAULT_PROFILE_PICTURE,
-                                        upload_to=settings.PROFILE_PICTURE_FOLDER)
+                                        upload_to=settings.PROFILE_PICTURE_FOLDER,
+                                        )
 
 
 class OnesignalPlayerId(models.Model):
