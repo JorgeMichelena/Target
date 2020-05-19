@@ -31,4 +31,3 @@ DATABASES = {
         engine=os.getenv('DB_ENGINE')
     )
 }
-
