@@ -4,10 +4,7 @@ from users.models import User
 
 
 class TopicAdmin(admin.ModelAdmin):
-    fieldsets = [
-        ('Name', {'fields': ['name']}),
-    ]
-    list_display = ['name']
+    list_display = ['name', 'picture']
     list_filter = ['name']
 
 

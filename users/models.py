@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
 
 
 class User(AbstractUser):
@@ -15,6 +16,8 @@ class User(AbstractUser):
         max_length=1,
         default='N',
     )
+    profile_picture = models.ImageField(default=settings.DEFAULT_PROFILE_PICTURE,
+                                        upload_to=settings.PROFILE_PICTURE_FOLDER)
 
 
 class OnesignalPlayerId(models.Model):
