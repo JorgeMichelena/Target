@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import json
 from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -26,8 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 
 # Application definition
 
@@ -70,6 +70,8 @@ MAX_TARGETS = 10
 
 SITE_ID = 1
 
+ROOT_URLCONF = 'target.urls'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -79,8 +81,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-ROOT_URLCONF = 'target.urls'
 
 TEMPLATES = [
     {
@@ -101,24 +101,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'target.wsgi.application'
 
 AUTH_USER_MODEL = 'users.User'
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('USER'),
-        'PASSWORD': os.getenv('PASSWORD', ''),
-        'HOST': os.getenv('HOST', 'localhost'),
-        'PORT': os.getenv('PORT'),
-        'TEST': {
-            'NAME': 'testing_database',
-        },
-    },
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -151,6 +133,22 @@ REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'api.serializers.RegisterSerializer',
 }
 
+# Database
+# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('USER'),
+        'PASSWORD': os.getenv('PASSWORD', ''),
+        'HOST': os.getenv('HOST', 'localhost'),
+        'PORT': os.getenv('PORT'),
+        'TEST': {
+            'NAME': 'testing_database',
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -257,3 +255,13 @@ PROFILE_PICTURE_FOLDER = os.getenv('PROFILE_PICTURE_FOLDER')
 TOPIC_PICTURE_FOLDER = os.getenv('TOPIC_PICTURE_FOLDER')
 DEFAULT_PROFILE_PICTURE = PROFILE_PICTURE_FOLDER + os.getenv('PROFILE_PICTURE_NAME')
 DEFAULT_TOPIC_PICTURE = TOPIC_PICTURE_FOLDER + os.getenv('TOPIC_PICTURE_NAME')
+
+# Static files
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
